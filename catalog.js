@@ -1,0 +1,16 @@
+
+if (!localStorage.getItem('tip')) {
+	alert('边学边做的，有问题请反馈给咱或者羽秋酱');
+	localStorage.setItem('tip', 'true');
+};
+
+extension["群友杀"] = {
+	date: "2025/08/02",
+	intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
+	author: "云笺",
+	netdisk: "无",
+	forum: "QQ群",
+	version: "1.0",
+	files: ["extension.js", "info.json", "KK酱.jpg", "LICENSE", "package.js", "README.md", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg"],
+	size: "5.4MB"
+};
