@@ -1,0 +1,9 @@
+extension["群友杀"]={
+	intro:"灵光乍现和超绝行动力的产物",
+	author:"云笺",
+	netdisk:"无",
+	forum:"QQ",
+	version:"1.0",
+	files:["info.json","README.md","怜魚.jpg","KK.jpg","狐黎.jpg","测试用角色.jpg","LICENSE","info.json","KK.jpg","LICENSE","package.js","README.md","怜魚.jpg","测试用角色.jpg","狐黎.jpg"],
+	size:"5.4MB"
+};
