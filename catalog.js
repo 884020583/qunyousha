@@ -1,4 +1,3 @@
-
 if (!localStorage.getItem('tip')) {
 	alert('边学边做的，有问题请反馈给咱或者羽秋酱');
 	localStorage.setItem('tip', 'true');
@@ -15,5 +14,5 @@ extension["群友杀"] = {
 		"KK酱.jpg", "LICENSE", "package.js", "README.md", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg",
 		"global",
 	],
-	size: "5.4MB"
+	size: "2.54MB"
 };
