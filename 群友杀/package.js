@@ -9,5 +9,5 @@ extension["群友杀"] = {
 		"KK酱.jpg", "LICENSE", "package.js", "README.md", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg",
 		"global",
 	],
-	size: "5.4MB"
+	size: "2.54MB"
 };
