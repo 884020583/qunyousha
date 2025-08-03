@@ -12,7 +12,7 @@ extension["群友杀"] = {
 	version: "1.0",
 	files: ["extension.js", "character.js", "characterSkill.js", "info.json",
 		"KK酱.jpg", "LICENSE", "package.js", "README.md", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg",
-		"global",
+		"global/helpFunction.js",
 	],
 	size: "2.54MB"
 };
