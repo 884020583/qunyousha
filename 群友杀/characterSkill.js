@@ -126,15 +126,38 @@ export const skill = {
 		},
 		"_priority": 0,
 	},
-	"测试用技能": {
+	"测试用技能一": {
+		// enable: "phaseUse",
+		// usable: Infinity,
+		// selectTarget: 1,
+		// filterTarget: function (card, player, target) {
+		// 	return true;
+		// },
+		// content: function () {
+		// 	target.damage();
+		// },
+		// "_priority": 0,
 		enable: "phaseUse",
 		usable: Infinity,
-		selectTarget: 1,
-		filterTarget: function (card, player, target) {
+		locked: false,
+		filterCard: function (card, player) {
 			return true;
 		},
+		viewAs: "wuzhong",
+		viewAsFilter: function (player) {
+			return player.countMark("Permissions_subskill1") > 0 && player.getCards("h").length > 0;
+		},
+	},
+	"测试用技能二": {
+		trigger: {
+			player: "useSkillAfter",
+		},
+		forced: true,
+		filter: function (event, player) {
+			return event.skill == "测试用技能一";
+		},
 		content: function () {
-			target.damage();
+			player.draw(3);
 		},
 		"_priority": 0,
 	},
@@ -218,7 +241,7 @@ export const skill = {
 				trigger: {
 					global: "damageBegin",
 				},
-				locked: true,
+				locked: false,
 				filter: function (event, player) {
 					return event.source == player && event.num > 0 &&
 						event.card && event.card.name != "sha" && get.tag(event.card, "damage");
@@ -282,7 +305,8 @@ export const skill = {
 			},
 			"subskill3": {
 				enable: ["chooseToUse", "chooseToRespond"],
-				locked: true,
+				usable: Infinity,
+				locked: false,
 				filterCard: {
 					name: "sha",
 				},
@@ -535,6 +559,197 @@ export const skill = {
 					nocount: true,
 				},
 			},
+		},
+	},
+	"Restrict": {
+		init: function (player) {
+			player.storage.Restrict = {
+				last_suit: null,
+			};
+		},
+		group: ["Restrict_subskill1", "Restrict_subskill2", "Restrict_subskill3"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					player: "phaseDrawBegin",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return true;
+				},
+				async content(event, trigger, player) {
+					trigger.num = 0;
+
+					var cards = get.cards(3, false);
+					game.cardsGotoOrdering(cards);
+					var result = await player.chooseToMove("选择1张牌放回牌堆顶并标记其花色，获得其余牌", true)
+						.set("list", [["获得的牌", cards], ["放回牌堆顶并标记花色的牌"]])
+						.set("filterMove", function(from, to, moved) {
+							return !(to == 1 && moved[1].length >= 1);
+						}).set("filterOk", function (moved) {
+						return moved[1].length == 1;
+						}).set("processAI", function (list) {
+						var cards = list[0][1].slice(0).sort(function (a, b) {
+							return get.value(b) - get.value(a);
+						});
+						return [cards, cards.splice(1)];
+						}).forResult();
+
+					const gain = result.moved[0];
+					const mark = result.moved[1][0];
+					player.gain(gain);
+					ui.cardPile.insertBefore(mark, ui.cardPile.firstChild);
+
+					const suits = ["heart", "diamond", "club", "spade"];
+					for (const suit of suits) {
+						const now_suit = get.suit(mark);
+						if (player.storage.Restrict.last_suit == null) {
+							player.storage.Restrict.last_suit = now_suit;
+							player.setMark("Restrict_subskill1_suit_" + now_suit, 1, false);
+						} else {
+							if (player.storage.Restrict.last_suit != now_suit) {
+								player.removeMark("Restrict_subskill1_suit_" + player.storage.Restrict.last_suit, 1, false);
+								player.setMark("Restrict_subskill1_suit_" + now_suit, 1, false);
+								player.storage.Restrict.last_suit = now_suit;
+							}
+						}
+					}
+				},
+			},
+			subskill1_suit_heart: {
+				charlotte: true,
+				marktext: "<span style=\"color: red;\">♥<\span>",
+				intro: {
+					nocount: true,
+					content: function (storage, player) {
+						return '当有角色使用或打出♥花色以外的牌时，' + get.translation(player. name) + "获得1【权限】标记";
+					},
+				},
+			},
+			subskill1_suit_diamond: {
+				charlotte: true,
+				marktext: "<span style=\"color: red;\">♦<\span>",
+				intro: {
+					nocount: true,
+					content: function (storage, player) {
+						return "当有角色使用或打出指定♦花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+					},
+				},
+			},
+			subskill1_suit_club: {
+				charlotte: true,
+				marktext: "<span style=\"color: black;\">♣<\span>",
+				intro: {
+					nocount: true,
+					content: function (storage, player) {
+						return "当有角色使用或打出指定♣花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+					},
+				},
+			},
+			subskill1_suit_spade: {
+				charlotte: true,
+				marktext: "<span style=\"color: black;\">♠<\span>",
+				intro: {
+					nocount: true,
+					content: function (storage, player) {
+						return "当有角色使用或打出指定♠花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+					},
+				},
+			},
+			subskill2: {
+				mod: {
+					maxHandcard: function (player, num) {
+						const suit = player.storage.Restrict.last_suit;
+						var add = player.getCards("h", function (card) {
+							return get.suit(card) == suit;
+						}).length;
+						return num + add;
+					},
+				},
+			},
+			subskill3: {
+				trigger: {
+					global: ["useCardAfter", "respondAfter"]
+				},
+				forced: true,
+				filter: function (event, player) {
+					if (!event.card) return false;
+					const suit1 = player.getStorage("Restrict").last_suit;
+					const suit2 = get.suit(event.card);
+					return suit1 != suit2;
+				},
+				content: function () {
+					player.addMark("Permissions_subskill1", 1, true);
+				}
+			},
+		},
+	},
+	"Permissions": {
+		group: ["Permissions_subskill1", "Permissions_subskill2", "Permissions_subskill3"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					player: "phaseZhunbeiBefore",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return true;
+				},
+				content: function () {
+					player.addMark("Permissions_subskill1", 1, true);
+				},
+				marktext: "权",
+				intro: {
+					name: "权限",
+					content: function (storage, player) {
+						return "其手牌上限+" + player.countMark("Permissions_subskill1");
+					},
+				},
+			},
+			subskill2: {
+				enable: "phaseUse",
+				usable: Infinity,
+				locked: false,
+				selectCard: 1,
+				filterCard: function (card, player, event) {
+					return get.position(card) == "h" || get.position(card) == "e";
+				},
+				filter: function (event, player) {
+					return player.countMark("Permissions_subskill1") > 0 && player.getCards("he").length > 0;
+				},
+				content: function() {
+					player.removeMark("Permissions_subskill1", 1, true);
+					player.discard(cards);
+					player.useCard({name: "wuzhong"}, player, false);
+				},
+			},
+			subskill3: {
+				mod: {
+					maxHandcard: function (player, num) {
+						return num + player.countMark("Permissions_subskill1");
+					},
+				},
+			},
+		},
+	},
+	"Root": {
+		enable: "phaseUse",
+		usable: Infinity,
+		locked: false,
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return player.countMark("Permissions_subskill1") >= target.maxHp && target != player;
+		},
+		filter: function (event, player) {
+			var num = player.countMark("Permissions_subskill1");
+			return game.filterPlayer(function (current) {
+				return num >= current.maxHp;
+			}).length > 0;
+		},
+		async content(event, trigger, player) {
+			player.setMark("Permissions_subskill1", 0, true);
+			const num = Math.floor(Math.max(1, (event.targets[0].maxHp / 2)));
+			await player.gainPlayerCard(event.targets[0], "he", num, false);
 		},
 	},
 };
