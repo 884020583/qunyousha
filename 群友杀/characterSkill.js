@@ -1,6 +1,6 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
 export const skill = {
-	"可爱": {
+	keai: {
 		trigger: {
 			player: "damageBegin",
 		},
@@ -30,8 +30,8 @@ export const skill = {
 		},
 		"_priority": 0,
 	},
-	"zako的羁绊": {
-		group: ["zako的羁绊_subskill1", "zako的羁绊_subskill2"],
+	zako_dejiban: {
+		group: ["zako_dejiban_subskill1", "zako_dejiban_subskill2"],
 		subSkill: {
 			"subskill1": {
 				trigger: {
@@ -39,13 +39,13 @@ export const skill = {
 				},
 				forced: true,
 				filter: function (event, player) {
-					return event.source.hasSkill("zako的羁绊") && (event.source !== player);
+					return event.source.hasSkill("zako_dejiban") && (event.source !== player);
 				},
 				content: function () {
 					trigger.num++;
 				},
 				sub: true,
-				sourceSkill: "zako的羁绊",
+				sourceSkill: "zako_dejiban",
 				"_priority": 0,
 			},
 			"subskill2": {
@@ -60,13 +60,13 @@ export const skill = {
 					trigger.source.draw();
 				},
 				sub: true,
-				sourceSkill: "zako的羁绊",
+				sourceSkill: "zako_dejiban",
 				"_priority": 0,
 			},
 		},
 		"_priority": 0,
 	},
-	"哈气！！！": {
+	haqi: {
 		trigger: {
 			player: "phaseZhunbeiBegin",
 		},
@@ -84,7 +84,7 @@ export const skill = {
 				if (!player.hasSkillTag("rejudge")) {
 					judgeMent.set("callback", function () {
 						if (event.judgeResult.color == "black" && get.position(card, true) == "o") {
-							player.gain(card, "gain2").gaintag.add("哈气！！！");
+							player.gain(card, "gain2").gaintag.add("haqi");
 						}
 					});
 				}
@@ -93,7 +93,7 @@ export const skill = {
 				var judgeCard = await judgeMent.forResultCard();
 				if (judgeBool) {
 					event.cards.push(judgeCard);
-					continueBool = await player.chooseBool("是否再次发动【哈气！！！】？")
+					continueBool = await player.chooseBool("是否再次发动【haqi】？")
 						.forResultBool();
 				} else {
 					await player.$throw(event.cards, 1000);
@@ -111,7 +111,7 @@ export const skill = {
 							return num;
 						}).forResult('targets');
 						if (target[0]) {
-							game.log(player, "的【哈气！！！】判定失败");
+							game.log(player, "的【haqi】判定失败");
 							await target[0].damage(damage_num);
 							player.draw();
 						}
@@ -121,21 +121,21 @@ export const skill = {
 				}
 
 				if (!continueBool) {
-					player.removeGaintag("哈气！！！");
+					player.removeGaintag("haqi");
 					return;
 				}
 			}
 		},
 		"_priority": 0,
 	},
-	"测试用技能一": {
+	"test1": {
 
 	},
-	"测试用技能二": {
+	"test2": {
 
 	},
-	"萌物": {
-		group: ["萌物_subskill1", "萌物_subskill2_sha", "萌物_subskill2_trick"],
+	mengwu: {
+		group: ["mengwu_subskill1", "mengwu_subskill2_sha", "mengwu_subskill2_trick"],
 		subSkill: {
 			"subskill1": {
 				enable: "phaseUse",
@@ -156,10 +156,10 @@ export const skill = {
 					target.recover();
 
 					"step 2";
-					target.addTempSkill("萌物_damageAdd", {player: "phaseAfter"});
-					if (!target.hasMark("萌物_subskill1")) {
-						target.setMark("萌物_subskill1", 1, false);
-						game.log(lib.translate[target.name] + "获得了【萌物】标记");
+					target.addTempSkill("mengwu_damageAdd", {player: "phaseAfter"});
+					if (!target.hasMark("mengwu_subskill1")) {
+						target.setMark("mengwu_subskill1", 1, false);
+						game.log(lib.translate[target.name] + "获得了【mengwu】标记");
 					}
 				},
 				marktext: "萌",
@@ -169,7 +169,7 @@ export const skill = {
 					nocount: true,
 				},
 				sub: true,
-				sourceSkill: "萌物",
+				sourceSkill: "mengwu",
 				"_priority": 0,
 			},
 			damageAdd: {
@@ -184,13 +184,13 @@ export const skill = {
 					trigger.num++;
 				},
 				onremove: function (player) {
-					if (player.hasMark("萌物_subskill1")) {
-						player.removeMark("萌物_subskill1", 1, false);
-						game.log(lib.translate[player.name] + "失去了【萌物】标记");
+					if (player.hasMark("mengwu_subskill1")) {
+						player.removeMark("mengwu_subskill1", 1, false);
+						game.log(lib.translate[player.name] + "失去了【mengwu】标记");
 					}
 				},
 				sub: true,
-				sourceSkill: "萌物",
+				sourceSkill: "mengwu",
 				"_priority": 0,
 			},
 			"subskill2_sha": {
@@ -204,10 +204,10 @@ export const skill = {
 				},
 				content: function () {
 					trigger.cancel();
-					game.log("【萌物】取消了此" + get.translation(trigger.card) + "的伤害")
+					game.log("【mengwu】取消了此" + get.translation(trigger.card) + "的伤害")
 				},
 				sub: true,
-				sourceSkill: "萌物",
+				sourceSkill: "mengwu",
 				"_priority": 0,
 			},
 			"subskill2_trick": {
@@ -221,17 +221,17 @@ export const skill = {
 				},
 				content: function () {
 					trigger.num++;
-					game.log("【萌物】增加了此" + get.translation(trigger.card) + "的伤害")
+					game.log("【mengwu】增加了此" + get.translation(trigger.card) + "的伤害")
 				},
 				sub: true,
-				sourceSkill: "萌物",
+				sourceSkill: "mengwu",
 				"_priority": 0,
 			},
 		},
 		"_priority": 0,
 	},
-	"你很棒了": {
-		group: ["你很棒了_subskill1", "你很棒了_subskill2", "你很棒了_subskill3", "你很棒了_subskill4", "你很棒了_subskill5_mark", "你很棒了_subskill5_content"],
+	nihenbangle: {
+		group: ["nihenbangle_subskill1", "nihenbangle_subskill2", "nihenbangle_subskill3", "nihenbangle_subskill4", "nihenbangle_subskill5_mark", "nihenbangle_subskill5_content"],
 		subSkill: {
 			"subskill1": {
 				trigger: {
@@ -253,7 +253,7 @@ export const skill = {
 					},
 				},
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 			"subskill2": {
@@ -273,7 +273,7 @@ export const skill = {
 					player.recover();
 				},
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 			"subskill3": {
@@ -302,7 +302,7 @@ export const skill = {
 				prompt: "将红色【杀】当做【乐不思蜀】使用或打出，黑色【杀】当做【兵粮寸断】使用或打出",
 				check: true,
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 			"subskill4": {
@@ -317,7 +317,7 @@ export const skill = {
 					player.draw();
 				},
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 			"subskill5_mark": {
@@ -326,27 +326,27 @@ export const skill = {
 				},
 				forced: true,
 				filter: function (event, player) {
-					return event.skill == "萌物_subskill1";
+					return event.skill == "mengwu_subskill1";
 				},
 				content: function () {
 					var last = game.filterPlayer(function (current) {
-						return current.hasMark("你很棒了_subskill5_mark");
+						return current.hasMark("nihenbangle_subskill5_mark");
 					});
-					if (last[0]) last[0].removeMark("你很棒了_subskill5_mark");
+					if (last[0]) last[0].removeMark("nihenbangle_subskill5_mark");
 					var target = trigger.targets[0];
-					if (!target.hasMark("你很棒了_subskill5_mark")) target.setMark("你很棒了_subskill5_mark", 1, false);
-					game.log(lib.translate[target.name] + "获得了【你很棒了】标记");
+					if (!target.hasMark("nihenbangle_subskill5_mark")) target.setMark("nihenbangle_subskill5_mark", 1, false);
+					game.log(lib.translate[target.name] + "获得了【nihenbangle】标记");
 				},
 				marktext: "棒",
 				intro: {
 					name: "你很棒了",
 					content: function (storage, player) {
-						return "该角色为" + get.translation("怜魚") + "的技能【萌物】的上一个目标";
+						return "该角色为【萌物】的上一个目标";
 					},
 					nocount: true,
 				},
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 			"subskill5_content": {
@@ -356,31 +356,31 @@ export const skill = {
 				forced: true,
 				filter: function (event, player) {
 					var last = game.filterPlayer(function (current) {
-						return current.hasMark("你很棒了_subskill5_mark");
+						return current.hasMark("nihenbangle_subskill5_mark");
 					});
 					return last[0];
 				},
 				content: function () {
 					var last = game.filterPlayer(function (current) {
-						return current.hasMark("你很棒了_subskill5_mark");
+						return current.hasMark("nihenbangle_subskill5_mark");
 					});
 					last[0].gain(player.getCards("h"), "gain2");
 					last[0].recover(player.maxHp);
 				},
 				sub: true,
-				sourceSkill: "你很棒了",
+				sourceSkill: "nihenbangle",
 				"_priority": 0,
 			},
 		},
 		"_priority": 0,
 	},
-	"加油！": {
+	jiayou: {
 		trigger: {
 			player: "phaseDrawBegin",
 		},
 		forced: true,
 		filter: function (event, player) {
-			if (get.characterIsOn("狐黎") == true) return true;
+			if (get.characterIsOn("huli") == true) return true;
 			return false;
 		},
 		content: function () {
@@ -388,35 +388,35 @@ export const skill = {
 		},
 		"_priority": 0,
 	},
-	"狐封": {
+	hufeng: {
 		enable: "phaseUse",
 		usable: Infinity,
 		selectTarget: 1,
 		filterTarget: function (card, player, target) {
-			return target != player && !target.hasMark("狐封");
+			return target != player && !target.hasMark("hufeng");
 		},
 		content: function () {
 			player.loseHp(2);
-			game.log(lib.translate[target.name] + "获得了【狐封】标记");
-			target.setMark("狐封", 1, false);
-			target.addTempSkill(["baiban", "狐封_subskill_removeMark"], "phaseAfter");
-			// player.addTempSkill("狐封_subskill_sha", "phaseAfter");
+			game.log(lib.translate[target.name] + "获得了【hufeng】标记");
+			target.setMark("hufeng", 1, false);
+			target.addTempSkill(["baiban", "hufeng_subskill_removeMark"], "phaseAfter");
+			// player.addTempSkill("hufeng_subskill_sha", "phaseAfter");
 		},
 		marktext: "封",
 		intro: {
 			name: "狐封",
 			content: function (storage, player) {
-				return "该角色在本回合内所有技能失效，且" + get.translation("狐黎") + "对其使用【杀】无次数限制";
+				return "该角色在本回合内所有技能失效，且" + get.translation("huli") + "对其使用【杀】无次数限制";
 			},
 			nocount: true,
 		},
-		group: ["狐封_subskill_sha"],
+		group: ["hufeng_subskill_sha"],
 		subSkill: {
 			"subskill_removeMark": {
 				charlotte: true,
 				onremove: function (player) {
-					game.log(lib.translate[player.name] + "失去了【狐封】标记");
-					player.removeMark("狐封", 1, false);
+					game.log(lib.translate[player.name] + "失去了【hufeng】标记");
+					player.removeMark("hufeng", 1, false);
 				},
 			},
 			"subskill_sha": {
@@ -426,7 +426,7 @@ export const skill = {
 				forced: true,
 				charlotte: true,
 				filter: function (event, player) {
-					return event.card.name == "sha" && event.targets[0].hasMark("狐封");
+					return event.card.name == "sha" && event.targets[0].hasMark("hufeng");
 				},
 				content: function () {
 					var stat = player.getStat().card;
@@ -437,8 +437,8 @@ export const skill = {
 			},
 		},
 	},
-	"登仙": {
-		group: ["登仙_draw", "登仙_recover"],
+	dengxian: {
+		group: ["dengxian_draw", "dengxian_recover"],
 		subSkill: {
 			draw: {
 				trigger: {
@@ -470,8 +470,8 @@ export const skill = {
 			},
 		},
 	},
-	"你真的很棒": {
-		group: ["你真的很棒_ison", "你真的很棒_die"],
+	nizhendehenbang: {
+		group: ["nizhendehenbang_ison", "nizhendehenbang_die"],
 		subSkill: {
 			ison: {
 				trigger: {
@@ -479,7 +479,7 @@ export const skill = {
 				},
 				forced: true,
 				filter: function (event, player) {
-					return get.characterIsOn("怜魚") !== -1;
+					return get.characterIsOn("lianyu") !== -1;
 				},
 				content: function () {
 					player.gainMaxHp();
@@ -492,14 +492,14 @@ export const skill = {
 				},
 				forced: true,
 				filter: function (event, player) {
-					return event.player.name == "怜魚";
+					return event.player.name == "lianyu";
 				},
 				content: function () {
 					player.loseMaxHp(2);
 					if (player.hp < player.maxHp) player.recover(player.maxHp - player.hp);
 					player.draw(3);
-					player.addSkill("你真的很棒_sha");
-					player.setMark("你真的很棒_sha", 1, false);
+					player.addSkill("nizhendehenbang_sha");
+					player.setMark("nizhendehenbang_sha", 1, false);
 				},
 			},
 			sha: {
@@ -534,7 +534,7 @@ export const skill = {
 			},
 		},
 	},
-	"Restrict": {
+	Restrict: {
 		init: function (player) {
 			player.storage.Restrict = {
 				last_suit: null,
@@ -657,7 +657,7 @@ export const skill = {
 			},
 		},
 	},
-	"Permissions": {
+	Permissions: {
 		group: ["Permissions_subskill1", "Permissions_subskill2", "Permissions_subskill3"],
 		subSkill: {
 			subskill1: {
@@ -705,7 +705,7 @@ export const skill = {
 			},
 		},
 	},
-	"Root": {
+	Root: {
 		enable: "phaseUse",
 		usable: Infinity,
 		locked: false,
@@ -725,7 +725,7 @@ export const skill = {
 			await player.gainPlayerCard(event.targets[0], "he", num, false);
 		},
 	},
-	"lingguang": {
+	lingguang: {
 		mark: true,
 		marktext: "<span style=\"color: orangered;\">光<\span>",
 		intro: {
@@ -807,7 +807,7 @@ export const skill = {
 			},
 		},
 	},
-	"chushi": {
+	chushi: {
 		trigger: {
 			global: "useCardAfter",
 		},
@@ -830,7 +830,7 @@ export const skill = {
 			}
 		},
 	},
-	"jianqi": {
+	jianqi: {
 		enable: "phaseUse",
 		usable: Infinity,
 		zhuanhuanji: true,
@@ -868,7 +868,7 @@ export const skill = {
 			},
 		},
 	},
-	"zhongcheng": {
+	zhongcheng: {
 		enable: "phaseUse",
 		usable: 3,
 		filter: function(event, player) {
@@ -941,7 +941,7 @@ export const skill = {
 			}
 		},
 	},
-	"gousi": {
+	gousi: {
 		enable: "phaseUse",
 		usable: 1,
 		filter: function(event, player) {

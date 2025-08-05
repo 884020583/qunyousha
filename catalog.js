@@ -4,7 +4,7 @@ if (!localStorage.getItem('tip')) {
 };
 
 extension["群友杀"] = {
-	date: "2025/08/05",
+	date: "2025/08/06",
 	intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
 	author: "云笺",
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
@@ -16,5 +16,5 @@ extension["群友杀"] = {
 
 		"KK酱.jpg", "package.js", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg", "Censored.jpg", "云笺.jpg",
 	],
-	size: "2.6MB"
+	size: "<10MB"
 };
