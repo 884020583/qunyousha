@@ -10,16 +10,18 @@ export const skill = {
 				(event.card.name == "sha" || (get.tag(event.card, "damage") && get.type(event.card) == "trick"));
 		},
 		async content(event, trigger, player) {
-			const result = await trigger.source.chooseBool("h", true)
-				.set("prompt", "请弃置1张手牌，否则此伤害对" + get.translation(player.name) + "无效")
-				.forResultBool();
-				if (!result) {
-					trigger.cancel();
-				} else {
-					await trigger.source.chooseToDiscard("h", true).set("ai", function (card) {
-						return get.value(card, player) - 2;
-					});
-				}
+			if (trigger.source.getCards("h").length < 1) {
+				trigger.cancel();
+				return;
+			}
+			const result = await trigger.source.chooseBool("请弃置1张手牌，否则此伤害对" + get.translation(player.name) + "无效").forResult();
+			if (!result.bool) {
+				trigger.cancel();
+			} else {
+				await trigger.source.chooseToDiscard("h", 1, true).set("ai", function (card) {
+					return get.value(card, player) - 2;
+				});
+			}
 		},
 		mod: {
 			maxHandcard: function (player, num) {
@@ -127,39 +129,10 @@ export const skill = {
 		"_priority": 0,
 	},
 	"测试用技能一": {
-		// enable: "phaseUse",
-		// usable: Infinity,
-		// selectTarget: 1,
-		// filterTarget: function (card, player, target) {
-		// 	return true;
-		// },
-		// content: function () {
-		// 	target.damage();
-		// },
-		// "_priority": 0,
-		enable: "phaseUse",
-		usable: Infinity,
-		locked: false,
-		filterCard: function (card, player) {
-			return true;
-		},
-		viewAs: "wuzhong",
-		viewAsFilter: function (player) {
-			return player.countMark("Permissions_subskill1") > 0 && player.getCards("h").length > 0;
-		},
+
 	},
 	"测试用技能二": {
-		trigger: {
-			player: "useSkillAfter",
-		},
-		forced: true,
-		filter: function (event, player) {
-			return event.skill == "测试用技能一";
-		},
-		content: function () {
-			player.draw(3);
-		},
-		"_priority": 0,
+
 	},
 	"萌物": {
 		group: ["萌物_subskill1", "萌物_subskill2_sha", "萌物_subskill2_trick"],
@@ -622,7 +595,7 @@ export const skill = {
 				intro: {
 					nocount: true,
 					content: function (storage, player) {
-						return '当有角色使用或打出♥花色以外的牌时，' + get.translation(player. name) + "获得1【权限】标记";
+						return '当有角色使用或打出♥花色的牌时，' + get.translation(player. name) + "获得1【权限】标记";
 					},
 				},
 			},
@@ -632,7 +605,7 @@ export const skill = {
 				intro: {
 					nocount: true,
 					content: function (storage, player) {
-						return "当有角色使用或打出指定♦花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+						return "当有角色使用或打出♦花色的牌时，" + get.translation(player. name) + "获得1【权限】标记";
 					},
 				},
 			},
@@ -642,7 +615,7 @@ export const skill = {
 				intro: {
 					nocount: true,
 					content: function (storage, player) {
-						return "当有角色使用或打出指定♣花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+						return "当有角色使用或打出♣花色的牌时，" + get.translation(player. name) + "获得1【权限】标记";
 					},
 				},
 			},
@@ -652,7 +625,7 @@ export const skill = {
 				intro: {
 					nocount: true,
 					content: function (storage, player) {
-						return "当有角色使用或打出指定♠花色以外的牌时，" + get.translation(player. name) + "获得1【权限】标记";
+						return "当有角色使用或打出♠花色的牌时，" + get.translation(player. name) + "获得1【权限】标记";
 					},
 				},
 			},
@@ -676,7 +649,7 @@ export const skill = {
 					if (!event.card) return false;
 					const suit1 = player.getStorage("Restrict").last_suit;
 					const suit2 = get.suit(event.card);
-					return suit1 != suit2;
+					return suit1 == suit2;
 				},
 				content: function () {
 					player.addMark("Permissions_subskill1", 1, true);
@@ -750,6 +723,267 @@ export const skill = {
 			player.setMark("Permissions_subskill1", 0, true);
 			const num = Math.floor(Math.max(1, (event.targets[0].maxHp / 2)));
 			await player.gainPlayerCard(event.targets[0], "he", num, false);
+		},
+	},
+	"lingguang": {
+		mark: true,
+		marktext: "<span style=\"color: orangered;\">光<\span>",
+		intro: {
+			name: "灵光",
+			content: function (storage, player) {
+				var title = "<span style=\"color: #000000;\">灵感之光仍在沉寂<\span>";
+				var extra = "";
+				if (player.hasSkill("chushi")) {
+					title = "<span style=\"color: #651f9a;\">灵感之光开始萌动<\span>";
+					extra = "\n已获得【初试】";
+				}
+				if (player.hasSkill("jianqi")) {
+					title = "<span style=\"color: #257fa7;\">灵感之光正在壮大<\span>";
+					extra = "\n已获得【初试】\n已获得【渐起】";
+				}
+				if (player.hasSkill("zhongcheng")) {
+					title = "<span style=\"color: orangered;\">灵感之光完善，伟大之作终成！<\span>";
+					extra = "\n已获得【初试】\n已获得【渐起】\n已获得【终成】";
+				}
+				return title + extra;
+			},
+		},
+		init: function (player) {
+			player.storage.lingguang2 = {
+				awaken: false,
+			};
+		},
+		derivation: ["chushi", "jianqi", "zhongcheng"],
+		group: ["lingguang_add1", "lingguang_add2", "lingguang_awaken"],
+		subSkill: {
+			add1: {
+				trigger: {
+					player: "phaseZhunbeiBegin",
+				},
+				forced: true,
+				persevereSkill: true,
+				charlotte: true,
+				filter: function(event, player) {
+					return player.countMark("lingguang") >= 33 && !player.hasSkill("chushi");
+				},
+				content: function() {
+					player.addSkill("chushi");
+				},
+			},
+			add2: {
+				trigger: {
+					player: "phaseZhunbeiBegin",
+				},
+				forced: true,
+				persevereSkill: true,
+				charlotte: true,
+				filter: function(event, player) {
+					return player.countMark("lingguang") >= 66 && !player.hasSkill("jianqi");
+				},
+				content: function() {
+					player.addSkill("jianqi");
+				},
+			},
+			awaken: {
+				trigger: {
+					player: "phaseZhunbeiBegin",
+				},
+				skillAnimation: true,
+				animationColor: "orange",
+				juexingjie: true,
+				unique: true,
+				forced: true,
+				filter: function(event, player) {
+					return player.countMark("lingguang") >= 99 && !player.storage.lingguang2.awaken;
+				},
+				content: function() {
+					player.awakenSkill("lingguang_awaken");
+					player.storage.lingguang2.awaken = true;
+					player.gainMaxHp();
+					player.recover();
+					player.draw(2);
+					player.addSkill("zhongcheng");
+				},
+			},
+		},
+	},
+	"chushi": {
+		trigger: {
+			global: "useCardAfter",
+		},
+		forced: true,
+		usable: 1,
+		filter: function(event, player) {
+			return true;
+		},
+		content: function() {
+			const type = get.type(trigger.card);
+			switch (type) {
+				case "basic":
+					player.draw(); break;
+				case "trick":
+					player.addMark("lingguang", 5, true); break;
+				case "equip":
+					player.recover(); break;
+				case "delay":
+					player.gainMaxHp();
+			}
+		},
+	},
+	"jianqi": {
+		enable: "phaseUse",
+		usable: Infinity,
+		zhuanhuanji: true,
+		filter: function (event, player) {
+			return player.countMark("lingguang") >= 10;
+		},
+		async content(event, trigger, player) {
+			player.removeMark("lingguang", 10, true);
+			if (player.storage.jianqi == true) {
+				const targets = await player.chooseTarget("获得一名其他角色区域里的1张牌", 1,
+					(card, player, target) => target != player && target.getCards("hej").length > 0
+				).forResultTargets();
+				await player.gainPlayerCard(targets[0], "hej", 1, false);
+			} else {
+				player.draw();
+				const bool = await player.chooseBool("是否交给一名其他角色1张牌？").forResultBool();
+				if (bool) {
+					const result = await player.chooseTarget(1,
+						(card, player, target) => target != player).forResult();
+					if (result.bool) await player.chooseToGive(result.targets[0], "he", 1, false);
+				}
+			}
+			player.changeZhuanhuanji("jianqi");
+		},
+		init: function(player) {
+			player.storage.jianqi = false;
+		},
+		mark: true,
+		marktext: "☯",
+		intro: {
+			name: "初试",
+			content: function(storage, player) {
+				var mode = player.storage.jianqi ? "阳" : "阴";
+				return "下次使用为 " + mode + " 效果";
+			},
+		},
+	},
+	"zhongcheng": {
+		enable: "phaseUse",
+		usable: 3,
+		filter: function(event, player) {
+			return player.countMark("lingguang") >= 20;
+		},
+		async content(event, trigger, player) {
+			player.removeMark("lingguang", 20);
+			const list = [
+				"视为使用一张无点数和花色的基本牌或非延时锦囊牌",
+				"对一名其他角色造成1伤害",
+				"令所有角色摸1张牌，然后其需交给你1或2张牌"
+			];
+			const result = await player.chooseControl(list[0], list[1], list[2]).set("ai", function() {
+				return list[Math.floor(Math.random() * list.length)];
+			}).forResult();
+
+			if (result.control == list[0]) {
+				var list1 = lib.inpile.filter(function (cardName) {
+					return get.type(cardName) == "basic" || get.type(cardName) == "trick";
+				});
+
+				var list2 = [];
+				for (var i of list1) {
+					if (lib.filter.cardUsable({name: i}, player, event.getParent("chooseToUse")) &&
+						game.hasPlayer(function (current) {
+							return player.canUse({name: i}, current);
+						})
+					) {
+						if (i == "sha") {
+							list2.push(["基本", "", "sha"]);
+							for (var j of lib.inpile_nature) list2.push(["基本", "", "sha", j]);
+						} else {
+							list2.push([get.type(i), "", i]);
+						}
+					}
+				}
+				if (list2.length) {
+					var resultcb = await player.chooseButton(["视为使用一张基本牌或非延时锦囊牌", [list2, "vcard"]], true).forResult();
+				} else {
+					event.finish();
+				}
+				if (resultcb && resultcb.bool && resultcb.links[0]) {
+					var card = {
+						name: resultcb.links[0][2],
+						nature: resultcb.links[0][3],
+						isCard: true,
+					};
+					await player.chooseUseTarget(card, true);
+				}
+			} else if (result.control == list[1]) {
+				const targets = await player.chooseTarget("对一名其他角色造成1伤害", 1,
+					(card, player, target) => target != player
+				).set("ai", function (target) {
+					var num = 1 + (target.maxHp - target.hp);
+					if (target.hp <= 1) num += 0.5;
+					if (get.attitude(player, target) > 0) num = -1;
+					return num;
+				}).forResultTargets();
+				if (targets.length) targets[0].damage();
+			} else {
+				for (var current of game.players) {
+					current.draw();
+					if (current == player) continue;
+					await current.chooseToGive(player, "he", [1, 2], false)
+						.set("prompt", "交给" + get.translation(current.name) + "1或2张牌")
+						.set("ai", function(card) {
+							return get.value(card, current);
+						});
+				}
+			}
+		},
+	},
+	"gousi": {
+		enable: "phaseUse",
+		usable: 1,
+		filter: function(event, player) {
+			return player.getCards("h").length > 0;
+		},
+		async content(event, trigger, player) {
+			const targets = [];
+			for (const current of game.players) {
+				const bool = await current.chooseBool("h", true)
+					.set("prompt", "你可以随机弃置1张手牌以参加" + get.translation(player.name) + "的议事")
+					.forResultBool();
+				if (bool) targets.push(current);
+			}
+			targets.forEach(current => { current.randomDiscard("h", 1); });
+
+			await player.chooseToDebate(targets).set("callback", async event => {
+				const { debateResult: result } = event;
+				const { bool, opinion, targets, opinions } = result;
+				if (bool && opinion) {
+					if (opinion && ["red", "black"].includes(opinion)) {
+						if (opinion == "red") result.red.map(i => i[0]).sortBySeat().forEach(target => { target.recover(); });
+						else result.black.map(i => i[0]).sortBySeat().forEach(target => { target.draw(2); });
+						if (result[opinion].slice().map(i => i[0]).includes(player)) {
+							player.draw(2);
+							player.addMark("lingguang", 15, true);
+						}
+					}
+					if (opinions.some(idea =>
+						targets.every(target =>
+							result[idea].slice().map(i => i[0]).includes(target)
+						)
+					)) {
+						targets.forEach(target => {
+							target.recover();
+							target.draw();
+						});
+						const num = Math.max(15, 4 * targets.length);
+						player.addMark("lingguang", num, true);
+					}
+				}
+			});
+			player.addMark("lingguang", 5, true);
 		},
 	},
 };
