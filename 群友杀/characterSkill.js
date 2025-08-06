@@ -986,4 +986,147 @@ export const skill = {
 			player.addMark("lingguang", 5, true);
 		},
 	},
+	zhongmu: {
+		group: ["zhongmu_subskill1", "zhongmu_subskill2", "zhongmu_subskill3", "zhongmu_subskill4", "zhongmu_subskill5"],
+		subSkill: {
+			subskill1: {
+				mod: {
+					cardUsable: function (card, player, num) {
+						if (card.name == "sha") return Infinity;
+					},
+					targetInRange: function (card, player, target) {
+						if (card.name == "sha") return true;
+					},
+				},
+			},
+			subskill2: {
+				trigger: {
+					source: "damageEnd",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return event.card && event.card.name == "sha";
+				},
+				content: function () {
+					player.recover(trigger.num);
+				},
+			},
+			subskill3: {
+				trigger: {
+					player: "shaBegin",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return get.color(event);
+				},
+				content: function () {
+					if (get.color(trigger) == "black") {
+						trigger.baseDamage++;
+					} else {
+						trigger.target.addTempSkill("qinggang2");
+					}
+				},
+			},
+			subskill4: {
+				enable: ["chooseToUse", "chooseToRespond"],
+				usable: Infinity,
+				locked: false,
+				position: "h",
+				prompt2: "将点数大于等于11的牌视为【杀】使用或打出",
+				filterCard: function (card, player, event) {
+					return get.number(card) >= 11;
+				},
+				viewAs: function (cards, player) {
+					return { name: "sha" };
+				},
+				filter: function (event, player) {
+					return player.countCards("h", function (card) {
+						return get.number(card) >= 11;
+					}) > 0;
+				},
+			},
+			subskill5: {
+				trigger: {
+					source: "dying",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					player.draw(3);
+				},
+			},
+		},
+	},
+	fancha: {
+		group: ["fancha_subskill1", "fancha_subskill2", "fancha_subskill3"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					player: "useCardToPlayered",
+				},
+				forced: true,
+				popup: false,
+				filter: function (event, player) {
+					return get.type(event.card) == "trick";
+				},
+				content: function () {
+					trigger.directHit.addArray(game.filterPlayer(function (current) {
+						return current != player;
+					}));
+				},
+			},
+			subskill2: {
+				enable: "chooseToUse",
+				usable: Infinity,
+				position: "h",
+				prompt2: "将锦囊牌视为【万箭齐发】使用",
+				filterCard: function (card, player, event) {
+					return get.type(card) == "trick";
+				},
+				viewAs: function (cards, player) {
+					return { name: "wanjian" };
+				},
+				filter: function (event, player) {
+					return player.countCards("h", function (card) {
+						return get.type(card) == "trick";
+					}) > 0;
+				},
+			},
+			subskill3: {
+				trigger: {
+					player: "damageEnd",
+				},
+				prompt2: function (event, player) {
+					return "你可以获得此" + get.translation(event.cards);
+				},
+				filter: function (event, player) {
+					return event.cards;
+				},
+				content: function () {
+					player.gain(trigger.cards, "gain2");
+				},
+			},
+		},
+	},
+	guangzhiyongzhe_lianjie: {
+		mod: {
+			targetEnabled: function (card, player, target) {
+				if (game.hasPlayer(function (current) {
+					return (current.name == "ailisi" || current.name == "kaiyi");
+				})) {
+					return card.name != "lebu";
+				}
+			},
+			maxHandcard: function (player, num) {
+				var add = 0;
+				var targets = game.filterPlayer(function (current) {
+					return current.name == "ailisi" || current.name == "kaiyi";
+				});
+				if (targets[0]) add = 2 * (targets[0].maxHp - targets[0].hp);
+				return num + add;
+			},
+		},
+	},
 };
