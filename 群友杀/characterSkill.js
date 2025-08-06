@@ -1034,7 +1034,7 @@ export const skill = {
 				usable: Infinity,
 				locked: false,
 				position: "h",
-				prompt2: "将点数大于等于11的牌视为【杀】使用或打出",
+				prompt: "将点数大于等于11的牌视为【杀】使用或打出",
 				filterCard: function (card, player, event) {
 					return get.number(card) >= 11;
 				},
@@ -1072,16 +1072,14 @@ export const skill = {
 					return get.type(event.card) == "trick";
 				},
 				content: function () {
-					trigger.directHit.addArray(game.filterPlayer(function (current) {
-						return current != player;
-					}));
+					trigger.directHit.addArray(game.players);
 				},
 			},
 			subskill2: {
 				enable: "chooseToUse",
 				usable: Infinity,
 				position: "h",
-				prompt2: "将锦囊牌视为【万箭齐发】使用",
+				prompt: "将锦囊牌视为【万箭齐发】使用",
 				filterCard: function (card, player, event) {
 					return get.type(card) == "trick";
 				},
@@ -1116,7 +1114,7 @@ export const skill = {
 				if (game.hasPlayer(function (current) {
 					return (current.name == "ailisi" || current.name == "kaiyi");
 				})) {
-					return card.name != "lebu";
+					if (card.name == "lebu") return false;
 				}
 			},
 			maxHandcard: function (player, num) {
