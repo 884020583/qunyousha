@@ -4,12 +4,13 @@ extension["群友杀"] = {
 	author: "云笺",
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.0.1",
-	files: ["extension.js", "character.js", "characterSkill.js", "info.json", "LICENSE", "README.md",
+	version: "1.0.2",
+	files: ["extension.js", "character.js", "characterSkill.js", "package.js", "info.json", "LICENSE", "README.md",
 
 		"global/helpFunction.js",
 
-		"KK酱.jpg", "package.js", "测试用角色.jpg", "狐黎.jpg", "怜魚.jpg", "Censored.jpg", "云笺.jpg",
+		"image/character/testcharacter.jpg", "image/character/KK_jiang.jpg", "image/character/huli.jpg", 
+		"image/character/lianyu.jpg", "image/character/Censored.jpg", "image/character/yunjian.jpg",
 	],
-	size: "<10MB" 
+	size: "<10MB"
 };
