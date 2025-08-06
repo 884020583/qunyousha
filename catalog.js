@@ -10,7 +10,7 @@ extension["群友杀"] = {
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
 	version: "1.0.2",
-	files: ["extension.js", "character.js", "characterSkill.js", "package.js", "info.json", "LICENSE", "README.md",
+	files: ["extension.js", "characterData.js", "characterSkill.js", "package.js", "info.json", "LICENSE", "README.md",
 
 		"global/helpFunction.js",
 
