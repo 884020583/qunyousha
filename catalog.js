@@ -9,14 +9,14 @@ extension["群友杀"] = {
 	author: "云笺",
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.0.2",
+	version: "1.0.3",
 	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "package.js", "info.json", "LICENSE", "README.md",
 
 		"global/helpFunction.js",
 
 		"image/character/testcharacter.jpg", "image/character/KK_jiang.jpg", "image/character/huli.jpg",
 		"image/character/lianyu.jpg", "image/character/Censored.jpg", "image/character/yunjian.jpg",
-		"image/character/Hina.jpg"
+		"image/character/Hina.jpg", "image/character/ailisi.jpg", "image/character/kaiyi.jpg"
 	],
 	size: "<10MB"
 };

@@ -300,7 +300,6 @@ export const skill = {
 				},
 				position: "hs",
 				prompt: "将红色【杀】当做【乐不思蜀】使用或打出，黑色【杀】当做【兵粮寸断】使用或打出",
-				check: true,
 				sub: true,
 				sourceSkill: "nihenbangle",
 				"_priority": 0,
@@ -1124,6 +1123,215 @@ export const skill = {
 				});
 				if (targets[0]) add = 2 * (targets[0].maxHp - targets[0].hp);
 				return num + add;
+			},
+		},
+	},
+	zuduishenqing: {
+		init: function (player) {
+			player.storage.zuduishenqing = {
+				lastPlayer: null,
+				forever: null,
+			};
+		},
+		enable: "phaseUse",
+		usable: 1,
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player && !target.hasMark("zuduishenqing");
+		},
+		content: function () {
+			if (player.storage.zuduishenqing.lastPlayer == null) {
+				target.addMark("zuduishenqing", 1, true);
+				target.addSkill("zuduishenqing_subskill");
+				player.storage.zuduishenqing.lastPlayer = target;
+			} else {
+				const lastPlayer = player.storage.zuduishenqing.lastPlayer;
+				if (lastPlayer != player.storage.zuduishenqing.forever) {
+					lastPlayer.removeMark("zuduishenqing", 1, true);
+					lastPlayer.removeSkill("zuduishenqing_subskill");
+				}
+
+				target.addMark("zuduishenqing", 1, true);
+				target.addSkill("zuduishenqing_subskill");
+				player.storage.zuduishenqing.lastPlayer = target;
+			}
+		},
+		marktext: "友",
+		intro: {
+			name: "队友",
+			nocount: true,
+			content: "体力上限+1，摸牌阶段的摸牌数+1，无法成为【铁索连环】的目标",
+		},
+		subSkill: {
+			subskill: {
+				init: function (player) {
+					player.gainMaxHp();
+				},
+				onremove: function (player) {
+					player.loseMaxHp();
+				},
+				mod: {
+					targetEnabled: function (card, player, target) {
+						if (card.name == "tiesuo") return false;
+					},
+				},
+				trigger: {
+					player: "phaseDrawBegin",
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				content: function () {
+					trigger.num++;
+				},
+			},
+		},
+	},
+	guangzhijian_shouhu: { 
+		group: ["guangzhijian_shouhu_subskill1", "guangzhijian_shouhu_subskill2"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					global: "damageBegin",
+				},
+				filter: function (event, player) {
+					if (event.player != player && !event.player.hasMark("zuduishenqing")) return false;
+					return event.num > 0 && player.countCards("he") >= event.num;
+				},
+				prompt2: function (event, player) {
+					return "是否弃置" + event.num + "张牌以取消此伤害，并视为对" + get.translation(event.source) + "使用一张【杀】？";
+				},
+				async content (event, trigger, player) {
+					const bool = await player.chooseToDiscard("he", trigger.num, true).forResultBool();
+					if (bool) {
+						trigger.cancel();
+						if (player.canUse({ name: "sha" }, trigger.source, false)) player.useCard({ name: "sha" }, trigger.source, false);
+					}
+				},
+			},
+			subskill2: {
+				trigger: {
+					global: "useCard",
+				},
+				filter(event, trigger) {
+					return event.card && (get.type(event.card) == "trick" || get.type(event.card) == "delay");
+				},
+				content: function () {
+					player.draw();
+				},
+			},
+		},
+	},
+	wumingwangnv: {
+		group: ["wumingwangnv_subskill1", "wumingwangnv_subskill2", "wumingwangnv_subskill3"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					player: "damageBefore",
+				},
+				forced: true,
+				locked: false,
+				firstDo: true,
+				filter: function (event, player) {
+					return event.card && ((event.card.name == "sha" && !event.nature) || event.card.name == "wanjian");
+				},
+				content: function () {
+					trigger.cancel();
+				},
+			},
+			subskill2: { 
+				mod: {
+					targetEnabled: function (card, player, target) {
+						if (["lebu", "bingliang", "tiesuo"].includes(card.name)) {
+							return false;
+						}
+					},
+				},
+			},
+			subskill3: {
+				trigger: {
+					player: "damageEnd",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return event.source && event.source != player;
+				},
+				content: function () { 
+					player.gainPlayerCard(trigger.source, "hej", 1, false);
+				},
+			},
+		},
+	},
+	yongzhedezeren: {
+		group: ["yongzhedezeren_subskill1", "yongzhedezeren_subskill2"],
+		subSkill: {
+			subskill1: {
+				trigger: {
+					global: "useCardToPlayered",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					if (!event.card) return false;
+					const Hina = game.findPlayer(function (current) {
+						return current.name == "Hina";
+					});
+					return event.target == Hina;
+				},
+				content: function () {
+					const Hina = game.findPlayer(function (current) {
+						return current.name == "Hina";
+					});
+					Hina.draw();
+				},
+			},
+			subskill2: {
+				trigger: {
+					global: "dying",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					const Hina = game.findPlayer(function (current) {
+						return current.name == "Hina";
+					});
+					return event.player == Hina;
+				},
+				content: async function (event, trigger, player) { 
+					const Hina = game.findPlayer(function (current) {
+						return current.name == "Hina";
+					});
+					player.$fullscreenpop("勇者的责任", "water");
+					Hina.recover();
+					Hina.gainMaxHp();
+					Hina.addTempSkill("yongzhedezeren_subskill2_damageDefened", "phaseAfter");
+					Hina.addMark("zuduishenqing", 1, true);
+					player.storage.zuduishenqing.forever = Hina;
+					player.turnOver();
+				},
+			},
+			subskill2_damageDefened: {
+				init: function (player) { 
+					player.addMark("yongzhedezeren_subskill2_damageDefened", 1, false);
+				},
+				onremove: function (player) { 
+					player.removeMark("yongzhedezeren_subskill2_damageDefened", 1, false);
+				},
+				trigger: {
+					player: "damageBegin",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					trigger.num = 0;
+				},
+				marktext: "勇",
+				intro: {
+					name: "勇者的责任",
+					content: "本回合内受到的伤害均为0",
+					nocount: true,
+				},
 			},
 		},
 	},

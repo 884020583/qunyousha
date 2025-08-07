@@ -22,6 +22,7 @@ export var character = {
 		sex: "male",
 		group: "zako",
 		hp: 4,
+		dualSideCharacter: "testcharacter",
 		skills: ["keai", "zako_dejiban", "haqi"],
 	},
 	lianyu: {
@@ -59,6 +60,17 @@ export var character = {
 		group: "aoye",
 		hp: 4,
 		maxHp: 7,
+		dualSideCharacter: "kaiyi",
+		skills: ["dualside", "zuduishenqing", "guangzhijian_shouhu", "wumingwangnv", "yongzhedezeren"],
+	},
+	kaiyi: {
+		sex: "female",
+		group: "aoye",
+		hp: 4,
+		maxHp: 7,
+		isUnseen: true,
+		dualSideCharacter: "ailisi",
+		skills: ["dualside"]
 	},
 };
 
