@@ -125,7 +125,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "云笺",
 			netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
-			version: "1.0.3",
+			version: "1.0.4",
 		}, files: {
 			"character": [],
 			"card": [],

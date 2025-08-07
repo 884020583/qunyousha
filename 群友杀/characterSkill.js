@@ -1303,12 +1303,13 @@ export const skill = {
 						return current.name == "Hina";
 					});
 					player.$fullscreenpop("勇者的责任", "water");
+					await game.delay(3);
 					Hina.recover();
-					Hina.gainMaxHp();
+					Hina.addSkill("zuduishenqing_subskill");
 					Hina.addTempSkill("yongzhedezeren_subskill2_damageDefened", "phaseAfter");
 					Hina.addMark("zuduishenqing", 1, true);
 					player.storage.zuduishenqing.forever = Hina;
-					player.turnOver();
+					player.switchSide();
 				},
 			},
 			subskill2_damageDefened: {
@@ -1335,4 +1336,221 @@ export const skill = {
 			},
 		},
 	},
+	jianglin: {
+		async init(player) {
+			player.logSkill("jianglin");
+			player.$fullscreenpop("王女手持钥匙<br>方舟静候多时", "fire");
+			await game.delay(3);
+			player.draw(player.maxHp);
+		},
+		locked: true,
+	},
+	guangzhijian_chongneng: {
+		trigger: {
+			global: ["useCard", "phaseEnd", "useCardToTargeted"],
+			player: ["damage"],
+		},
+		forced: true,
+		filter: function (event, player, name) {
+			if (player.countMark("guangzhijian_chongneng") >= 20) return false;
+			switch (name) {
+				case "useCard":
+					return true;
+				case "phaseEnd":
+					return true;
+				case "damage":
+					return true;
+				case "useCardToTargeted":
+					return event.target.name == "Hina" && event.player !="Hina" && event.player != player;
+				default:
+					return false;
+			}
+		},
+		content: function () {
+			let num = 0;
+			const name = event.triggername;
+
+			switch (name) {
+				case "useCard":
+					if (get.type(trigger.card) === "trick") {
+						num = 3;
+					} else {
+						num = 1;
+					}
+					break;
+				case "phaseEnd":
+					num = 2;
+					break;
+				case "damage":
+					num = 2;
+					break;
+				case "useCardToTargeted":
+					num = 4;
+					break;
+			}
+
+			if (num > 0) {
+				const currentMarks = player.countMark("guangzhijian_chongneng");
+				const addMarks = Math.min(num, 20 - currentMarks);
+				if (addMarks > 0) {
+					player.addMark("guangzhijian_chongneng", addMarks, true);
+				}
+			}
+		},
+		marktext: "能",
+		intro: {
+			name: "充能",
+			content: "当前拥有#个【充能】标记"
+		}
+	},
+	guangzhijian_zuidaedinggonglv: {
+		enable: "phaseUse",
+		filter: function (event, player) {
+			return player.hasMark("guangzhijian_chongneng");
+		},
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player;
+		},
+		prompt2: function (event, player) {
+			const damage = Math.max(1, Math.floor(markCount / 2));
+			return "你可以移除所有【充能】标记，对一名其他角色造成" + damage + "伤害";
+		},
+		content: function () {
+			// 获取充能标记数量
+			const markCount = player.countMark("guangzhijian_chongneng");
+			// 移除所有充能标记
+			player.removeMark("guangzhijian_chongneng", markCount);
+			// 计算伤害值，最少为1
+			const damageNum = Math.max(1, Math.floor(markCount / 2));
+			// 对目标造成伤害
+			target.damage(damageNum);
+		},
+	},
+	guangzhijian_huimie: {
+		enable: "phaseUse",
+		filter: function (event, player) {
+			// 需要至少20个充能标记才能使用
+			return player.hasMark("guangzhijian_chongneng") && player.countMark("guangzhijian_chongneng") >= 20;
+		},
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player;
+		},
+		content: function () {
+			// 失去所有充能标记
+			const markCount = player.countMark("guangzhijian_chongneng");
+			player.removeMark("guangzhijian_chongneng", markCount);
+			
+			// 对目标造成等于其体力上限的伤害
+			const damageValue = target.maxHp;
+			target.damage(damageValue);
+			
+			// 令目标弃置所有手牌
+			if (target.countCards("h") > 0) {
+				target.discard(target.getCards("h"));
+			}
+			
+			// 切换角色
+			player.switchSide();
+		},
+	},
+	huimiedeyaoshi: {
+		locked: true,
+		group: ["huimiedeyaoshi_draw", "huimiedeyaoshi_sha", "huimiedeyaoshi_judge", "huimiedeyaoshi_nanman"],
+		subSkill: {
+			draw: {
+				trigger: {
+					source: "damageEnd",
+				},
+				filter: function (event, player) {
+					// 仅当使用杀造成伤害时触发
+					return event.card && event.card.name == "sha";
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					// 摸1张牌
+					player.draw();
+				},
+			},
+			sha: {
+				mod: {
+					cardDiscardable: function (card, player, target) {
+						// 杀需要目标弃置2张基本牌才能抵消
+						if (card.name == "sha") {
+							return function (event, player, target) {
+								if (target.countCards("h", { type: "basic" }) < 2) {
+									return false;
+								}
+								return true;
+							};
+						}
+					},
+				},
+				trigger: {
+					source: "damageBegin",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					if (!player.hasMark("guangzhijian_chongneng")) return false;
+					return event.card && event.card.name == "sha" && (get.nature(event) == "fire" || get.nature(event) == "thunder");
+				},
+				async content(event, trigger, player) {
+					// 进行判定
+					const judgeResult = await player.judge().forResult();
+					// 若结果为黑色
+					if (get.color(judgeResult) == "black") {
+						// 失去1充能标记
+						player.removeMark("guangzhijian_chongneng", 1);
+						// 令此牌伤害+1
+						trigger.num++;
+					}
+				},
+			},
+			nanman: {
+				trigger: {
+					global: "useCard",
+				},
+				locked: false,
+				filter: function (event, player) {
+					return event.card && event.card.name == "nanman" && event.player != player;
+				},
+				prompt2: function (event, player) {
+					return "是否令" + get.translation(event.player) + "失去1体力？";
+				},
+				content: function () {
+					trigger.player.loseHp();
+				},
+			},
+		},
+	},
+	wangnvdeyiyuan: {
+		trigger: {
+			global: "damageBegin",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			// 当Hina受到伤害时触发
+			return event.player.name == "Hina";
+		},
+		priority: 10,
+		content: function () {
+			// 检查是否有足够的充能标记
+			const markCount = player.countMark("guangzhijian_chongneng");
+			if (markCount >= trigger.num) {
+				// 有足够的充能标记，失去相应数量的充能标记令伤害失效
+				player.removeMark("guangzhijian_chongneng", trigger.num);
+				trigger.cancel();
+				event.finish();
+			} else {
+				// 没有足够的充能标记，代为承受伤害
+				trigger.player = player;
+				trigger.targets = [player];
+			}
+		},
+	},
+	
 };

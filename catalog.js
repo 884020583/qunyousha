@@ -9,8 +9,8 @@ extension["群友杀"] = {
 	author: "云笺",
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.0.3",
-	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "package.js", "info.json", "LICENSE", "README.md",
+	version: "1.0.4",
+	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "package.js", "info.json", "LICENSE", "README.md", "DEV_GUIDE.md", "workspace.json",
 
 		"global/helpFunction.js",
 
