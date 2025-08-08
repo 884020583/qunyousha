@@ -1,3 +1,37 @@
+export const groups = {
+	qunyou: {
+		short: "群友",
+		name: "群友",
+		color: "#FFD700",
+		image: "./extension/群友杀/image/groups/qunyou.jpg"
+	},
+	zako: {
+		short: "zako派",
+		name: "zako派",
+		color: "#87CEEB"
+	},
+	waijing: {
+		short: "歪经派",
+		name: "歪经派",
+		color: "#32CD32"
+	},
+	feisheng: {
+		short: "飞升派",
+		name: "飞升派",
+		color: "#BA55D3"
+	},
+	shigan: {
+		short: "实干派",
+		name: "实干派",
+		color: "#FF4500"
+	},
+	aoye: {
+		short: "熬夜派",
+		trannameslation: "熬夜派",
+		color: "#2F4F4F"
+	}
+};
+
 export const intro = {
 	"testcharacter": "一个测试用角色",
 	"KK_jiang": "一只可爱的KK猫哦~",
@@ -16,6 +50,7 @@ export var character = {
 		hp: 5,
 		maxHp: 10,
 		hujia: 5,
+		isAiForbidden: false,
 		skills: ["test1", "test2"],
 	},
 	KK_jiang: {
@@ -47,7 +82,7 @@ export var character = {
 		sex: "male",
 		group: "shigan",
 		hp: 3,
-		skills: ["lingguang", "gousi"],
+		skills: ["lingguang", "gousi", "gongmian"],
 	},
 	Hina: {
 		sex: "female",
@@ -70,6 +105,12 @@ export var character = {
 		isUnseen: true,
 		dualSideCharacter: "ailisi",
 		skills: ["dualside", "jianglin", "guangzhijian_chongneng", "guangzhijian_zuidaedinggonglv", "guangzhijian_huimie", "huimiedeyaoshi", "wangnvdeyiyuan"]
+	},
+	chengzi: {
+		sex: "male",
+		group: "feisheng",
+		hp: 6,
+		skills: ["feitiandazhou", "lurenwangdefanying", "chudifantan", "jiuchengsanwujin"],
 	},
 };
 

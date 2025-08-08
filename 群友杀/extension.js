@@ -13,6 +13,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				}
 			}
 		}, precontent: async function(qunyousha) {
+			// 加载global文件夹内的js文件
 			const addImport = function(url) {
 				return new Promise((resolve, reject) => {
 					const script = document.createElement('script');
@@ -56,6 +57,12 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				const characterSkill = await importCharacterSkill();
 				const translation = await importTranslation();
 
+				// 添加自定义势力
+				for (const groupId in characterData.groups) {
+					const group = characterData.groups[groupId];
+					game.addGroup(groupId, group.short, group.name, { color: group.color, image: group.image });
+				}
+
 				game.import('character', function() {
 					var qunyousha = {
 						name: 'qunyousha',
@@ -64,7 +71,6 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						character: characterData.character,
 						characterIntro: characterData.intro,
 						translate: {
-							...translation.group,
 							...translation.character,
 							...translation.skill,
 						},
@@ -125,7 +131,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "云笺",
 			netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
-			version: "1.0.4",
+			version: "1.0.5",
 		}, files: {
 			"character": [],
 			"card": [],

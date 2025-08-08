@@ -1,4 +1,5 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
+import { intro } from './characterData.js';
 export const skill = {
 	keai: {
 		trigger: {
@@ -378,8 +379,9 @@ export const skill = {
 			player: "phaseDrawBegin",
 		},
 		forced: true,
+		locked: false,
 		filter: function (event, player) {
-			if (get.characterIsOn("huli") == true) return true;
+			if (game.hasPlayer(current => current.name == "huli")) return true;
 			return false;
 		},
 		content: function () {
@@ -473,16 +475,11 @@ export const skill = {
 		group: ["nizhendehenbang_ison", "nizhendehenbang_die"],
 		subSkill: {
 			ison: {
-				trigger: {
-					global: "gameStart",
-				},
-				forced: true,
-				filter: function (event, player) {
-					return get.characterIsOn("lianyu") !== -1;
-				},
-				content: function () {
-					player.gainMaxHp();
-					player.recover();
+				init: function (player) { 
+					if (game.hasPlayer(current => current.name == "lianyu")) {
+						player.gainMaxHp();
+						player.recover();
+					}
 				},
 			},
 			die: {
@@ -734,15 +731,15 @@ export const skill = {
 				var extra = "";
 				if (player.hasSkill("chushi")) {
 					title = "<span style=\"color: #651f9a;\">灵感之光开始萌动<\span>";
-					extra = "\n已获得【初试】";
+					extra = "<br>已获得【初试】";
 				}
 				if (player.hasSkill("jianqi")) {
 					title = "<span style=\"color: #257fa7;\">灵感之光正在壮大<\span>";
-					extra = "\n已获得【初试】\n已获得【渐起】";
+					extra = "<br>已获得【初试】<br>已获得【渐起】";
 				}
 				if (player.hasSkill("zhongcheng")) {
 					title = "<span style=\"color: orangered;\">灵感之光完善，伟大之作终成！<\span>";
-					extra = "\n已获得【初试】\n已获得【渐起】\n已获得【终成】";
+					extra = "<br>已获得【初试】<br>已获得【渐起】<br>已获得【终成】";
 				}
 				return title + extra;
 			},
@@ -766,6 +763,8 @@ export const skill = {
 					return player.countMark("lingguang") >= 33 && !player.hasSkill("chushi");
 				},
 				content: function() {
+					player.gainMaxHp();
+					player.recover();
 					player.addSkill("chushi");
 				},
 			},
@@ -780,6 +779,7 @@ export const skill = {
 					return player.countMark("lingguang") >= 66 && !player.hasSkill("jianqi");
 				},
 				content: function() {
+					player.draw(2);
 					player.addSkill("jianqi");
 				},
 			},
@@ -800,7 +800,7 @@ export const skill = {
 					player.storage.lingguang2.awaken = true;
 					player.gainMaxHp();
 					player.recover();
-					player.draw(2);
+					player.draw(3);
 					player.addSkill("zhongcheng");
 				},
 			},
@@ -842,7 +842,7 @@ export const skill = {
 				const targets = await player.chooseTarget("获得一名其他角色区域里的1张牌", 1,
 					(card, player, target) => target != player && target.getCards("hej").length > 0
 				).forResultTargets();
-				await player.gainPlayerCard(targets[0], "hej", 1, false);
+				if (targets.length > 0) await player.gainPlayerCard(targets[0], "hej", 1, false);
 			} else {
 				player.draw();
 				const bool = await player.chooseBool("是否交给一名其他角色1张牌？").forResultBool();
@@ -876,9 +876,9 @@ export const skill = {
 		async content(event, trigger, player) {
 			player.removeMark("lingguang", 20);
 			const list = [
-				"视为使用一张无点数和花色的基本牌或非延时锦囊牌",
+				"视为使用一张无点数和花色的<br>基本牌或非延时锦囊牌",
 				"对一名其他角色造成1伤害",
-				"令所有角色摸1张牌，然后其需交给你1或2张牌"
+				"令所有角色摸1张牌，<br>然后其需交给你1或2张牌"
 			];
 			const result = await player.chooseControl(list[0], list[1], list[2]).set("ai", function() {
 				return list[Math.floor(Math.random() * list.length)];
@@ -984,6 +984,88 @@ export const skill = {
 			});
 			player.addMark("lingguang", 5, true);
 		},
+	},
+	gongmian: {
+		init: function (player) {
+			if (!player.isZhu) {
+				player.removeSkill("gongmian_gain");
+				player.removeSkill("gongmian_phase");
+			}
+		},
+		locked: true,
+		group: ["gongmian_gain", "gongmian_phase"],
+		subSkill: {
+			gain: {
+				trigger: {
+					global: "useCard",
+				},
+				forced: true,
+				locked: true,
+				content: function () {
+					// 当有角色使用牌时，获得1【灵光】标记
+					player.addMark("lingguang", 1, true);
+				},
+			},
+			phase: {
+				trigger: {
+					player: "phaseUseEnd",
+				},
+				locked: true,
+				filter: function (event, player) {
+					// 检查是否有足够的【灵光】标记
+					return player.countMark("lingguang") >= 10 && player.countCards("h") > 0;
+				},
+				async content (event, trigger, player) {
+					// 失去10【灵光】标记
+					player.removeMark("lingguang", 10, true);
+					
+					// 选择其他任意名角色
+					const result = await player.chooseTarget(
+						"请选择要分配手牌的角色",
+						[1, Infinity],
+						function (card, player, target) {
+							return target != player;
+						}
+					).set("ai", function (target) {
+						return get.attitude(player, target);
+					}).forResult();
+					
+					if (result.bool) {
+						const targets = result.targets;
+						
+						// 将手牌随机均分给这些角色
+						const handcards = player.getCards("h");
+						const num = Math.floor(handcards.length / targets.length);
+						
+						if (num > 0) {
+							// 洗牌以实现随机分配
+							handcards.randomSort();
+							
+							// 分配手牌
+							for (let i = 0; i < targets.length; i++) {
+								const cards = handcards.slice(i * num, (i + 1) * num);
+								if (cards.length > 0) {
+									targets[i].gain(cards, player, "gainAuto");
+								}
+							}
+						}
+					}
+					
+					player.draw(player.getHandcardLimit());
+				},
+				ai: {
+					order: 8,
+					result: {
+						player: function (player) {
+							// 只在玩家手牌较多且有足够灵光标记时使用
+							if (player.countMark("lingguang") < 10) return 0;
+							if (player.countCards("h") >= player.getHandcardLimit()) return 1;
+							return 0;
+						}
+					}
+				}
+			}
+		}
 	},
 	zhongmu: {
 		group: ["zhongmu_subskill1", "zhongmu_subskill2", "zhongmu_subskill3", "zhongmu_subskill4", "zhongmu_subskill5"],
@@ -1213,6 +1295,7 @@ export const skill = {
 				trigger: {
 					global: "useCard",
 				},
+				prompt2: "是否摸一张牌？",
 				filter(event, trigger) {
 					return event.card && (get.type(event.card) == "trick" || get.type(event.card) == "delay");
 				},
@@ -1309,7 +1392,7 @@ export const skill = {
 					Hina.addTempSkill("yongzhedezeren_subskill2_damageDefened", "phaseAfter");
 					Hina.addMark("zuduishenqing", 1, true);
 					player.storage.zuduishenqing.forever = Hina;
-					player.switchSide();
+					player.turnCharacter();
 				},
 			},
 			subskill2_damageDefened: {
@@ -1452,7 +1535,7 @@ export const skill = {
 			}
 			
 			// 切换角色
-			player.switchSide();
+			player.turnCharacter();
 		},
 	},
 	huimiedeyaoshi: {
@@ -1552,5 +1635,193 @@ export const skill = {
 			}
 		},
 	},
-	
+	feitiandazhou: {
+		enable: "phaseUse",
+		filter: function (event, player) {
+			// 体力大于1且能失去2体力但不会降到1以下
+			return player.hp > 1;
+		},
+		content: function () {
+			// 失去2体力
+			if (player.hp - 2 < 1) player.loseHp(player.hp - 1);
+			else player.loseHp(2);
+			
+			// 添加本回合伤害+1的技能效果
+			player.addTempSkill("feitiandazhou_buff");
+			player.addMark("feitiandazhou_buff", 1, false);
+		},
+		subSkill: {
+			buff: {
+				trigger: { 
+					source: "damageBegin" 
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				onremove: function (player) {
+					player.removeMark("feitiandazhou_buff", player.countMark("feitiandazhou_buff"), false);
+				},
+				content: function () {
+					// 伤害+1
+					trigger.num += player.countMark("feitiandazhou_buff");
+					
+					// 令目标随机失去装备区的1张牌
+					if (trigger.player.countCards("e") > 0) {
+						const cards = trigger.player.getCards("e");
+						const card = cards.randomGet();
+						if (card) {
+							trigger.player.discard(card);
+						}
+					}
+				},
+				marktext: "肘",
+				intro: {
+					name: "飞天大肘",
+					content: "本回合内造成的伤害+#，且目标随机失去装备区的1张牌",
+				},
+			}
+		}
+	},
+	lurenwangdefanying: {
+		forced: true,
+		locked: false,
+		init: function (player) { 
+			player.storage.lurenwangdefanying = {
+				defend: false,
+			};
+		},
+		group: ["lurenwangdefanying_damage", "lurenwangdefanying_phase"],
+		subSkill: {
+			damage: {
+				trigger: {
+					player: "damageBegin",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					if (!player.storage.lurenwangdefanying.defend) {
+						player.addMark("lurenwangdefanying_damage", 1, true);
+						player.storage.lurenwangdefanying.defend = true;
+					} else {
+						trigger.num = 0;
+						player.removeMark("lurenwangdefanying_damage", 1, true);
+						player.storage.lurenwangdefanying.defend = false;
+					}
+				},
+				marktext: "反",
+				intro: {
+					name: "路人王的反应",
+					nocount: true,
+					content: "防止下一次受到的伤害",
+				},
+			},
+			phase: {
+				trigger: {
+					player: "phaseBegin",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					// 计算x/2，x为体力上限，向下取整
+					const halfMaxHp = Math.floor(player.maxHp / 2);
+					// 如果当前体力不足x/2
+					if (player.hp < halfMaxHp) {
+						// 将体力回复至x/2+1
+						const targetHp = halfMaxHp + 1;
+						if (targetHp > player.hp) {
+							player.recoverTo(targetHp);
+						}
+					}
+				}
+			}
+		}
+	},
+	chudifantan: {
+		trigger: {
+			player: "changeHp",
+		},
+		forced: true,
+		locked: false,
+		popup: false,
+		content: function () { 
+			if (player.hp <= 1) {
+				player.addMark("chudifantan", 1, true);
+				player.addSkill("chudifantan_baseDamage");
+				player.addSkill("chudifantan_directHit");
+				player.addSkill("chudifantan_dying");
+			} else {
+				player.removeMark("chudifantan", 1, true);
+				player.removeSkill("chudifantan_baseDamage");
+				player.removeSkill("chudifantan_directHit");
+				player.removeSkill("chudifantan_dying");
+			}
+		},
+		marktext: "底", 
+		intro: {
+			name: "触底反弹",
+			nocount: true,
+			content: "其使用的【杀】无法被响应且伤害+1。当其使用【杀】令其他角色进入濒死状态时：其回复所有体力；其获得该角色的所有手牌",
+		},
+		subSkill: {
+			baseDamage: {
+				trigger: {
+					player: "shaBegin",
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				content: function () { 
+					trigger.baseDamage++;
+				},
+			},
+			directHit: {
+				trigger: {
+					player: "useCardToPlayered",
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				filter: function (event, player) {
+					return event.card.name == "sha";
+				},
+				content: function () {
+					trigger.directHit.addArray(trigger.targets);
+				},
+			},
+			dying: {
+				trigger: {
+					source: "dying",
+				},
+				filter: function (event, player) {
+					if (event.getParent("damage").card.name != "sha") return false;
+					return event.player != player;
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				content: function () {
+					player.recoverTo(player.maxHp);
+					
+					const cards = trigger.player.getCards("h");
+					if (cards.length > 0) {
+						player.gain(cards, trigger.player);
+					}
+				},
+			},
+		},
+	},
+	jiuchengsanwujin: {
+		trigger: {
+			global: "useSkill",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) { 
+			return event.player.name == "shijiu" && event.skill == "chaojuefeidan";
+		},
+		content: function () { 
+			player.recover();
+			player.draw();
+		},
+	},
 };
