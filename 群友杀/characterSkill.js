@@ -754,7 +754,7 @@ export const skill = {
 		subSkill: {
 			add1: {
 				trigger: {
-					player: "phaseZhunbeiBegin",
+					global: "phaseZhunbeiBegin",
 				},
 				forced: true,
 				persevereSkill: true,
@@ -770,7 +770,7 @@ export const skill = {
 			},
 			add2: {
 				trigger: {
-					player: "phaseZhunbeiBegin",
+					global: "phaseZhunbeiBegin",
 				},
 				forced: true,
 				persevereSkill: true,
@@ -785,7 +785,7 @@ export const skill = {
 			},
 			awaken: {
 				trigger: {
-					player: "phaseZhunbeiBegin",
+					global: "phaseZhunbeiBegin",
 				},
 				skillAnimation: true,
 				animationColor: "orange",
