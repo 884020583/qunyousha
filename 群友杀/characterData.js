@@ -82,6 +82,7 @@ export var character = {
 		sex: "male",
 		group: "shigan",
 		hp: 3,
+		isZhugong: true,
 		skills: ["lingguang", "gousi", "gongmian"],
 	},
 	Hina: {
