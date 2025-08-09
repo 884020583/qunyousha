@@ -50,7 +50,7 @@ export var character = {
 		hp: 5,
 		maxHp: 10,
 		hujia: 5,
-		isAiForbidden: false,
+		isAiForbidden: true,
 		skills: ["test1", "test2"],
 	},
 	KK_jiang: {
@@ -112,6 +112,18 @@ export var character = {
 		group: "feisheng",
 		hp: 6,
 		skills: ["feitiandazhou", "lurenwangdefanying", "chudifantan", "jiuchengsanwujin"],
+	},
+	shijiu: {
+		sex: "male",
+		group: "feisheng",
+		hp: 4,
+		skills: ["xunhangdaodan", "niaoshoushourenzhuli", "jiuzhuandacheng"],
+	},
+	aili: {
+		sex: "female",
+		group: "waijing",
+		hp: 6,
+		skills: ["aidechuanbo", "aishen", "fenseyaojing"],
 	},
 };
 

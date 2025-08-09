@@ -4,12 +4,12 @@ if (!localStorage.getItem('tip')) {
 };
 
 extension["群友杀"] = {
-	date: "2025/08/08",
+	date: "2025/08/09",
 	intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
 	author: "云笺",
 	netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.0.5",
+	version: "1.0.6",
 	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "package.js", "info.json", "LICENSE",
 
 		"global/helpFunction.js",
@@ -21,4 +21,4 @@ extension["群友杀"] = {
 		"image/character/shijiu.jpg", "image/character/aili.jpg",
 	],
 	size: "<10MB"
-};
+}

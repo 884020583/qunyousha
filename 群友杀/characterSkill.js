@@ -1,5 +1,4 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
-import { intro } from './characterData.js';
 export const skill = {
 	keai: {
 		trigger: {
@@ -160,7 +159,7 @@ export const skill = {
 					target.addTempSkill("mengwu_damageAdd", {player: "phaseAfter"});
 					if (!target.hasMark("mengwu_subskill1")) {
 						target.setMark("mengwu_subskill1", 1, false);
-						game.log(lib.translate[target.name] + "获得了【mengwu】标记");
+						game.log(lib.translate[target.name] + "萌物");
 					}
 				},
 				marktext: "萌",
@@ -187,7 +186,7 @@ export const skill = {
 				onremove: function (player) {
 					if (player.hasMark("mengwu_subskill1")) {
 						player.removeMark("mengwu_subskill1", 1, false);
-						game.log(lib.translate[player.name] + "失去了【mengwu】标记");
+						game.log(lib.translate[player.name] + "失去了【萌物】标记");
 					}
 				},
 				sub: true,
@@ -205,7 +204,6 @@ export const skill = {
 				},
 				content: function () {
 					trigger.cancel();
-					game.log("【mengwu】取消了此" + get.translation(trigger.card) + "的伤害")
 				},
 				sub: true,
 				sourceSkill: "mengwu",
@@ -222,7 +220,6 @@ export const skill = {
 				},
 				content: function () {
 					trigger.num++;
-					game.log("【mengwu】增加了此" + get.translation(trigger.card) + "的伤害")
 				},
 				sub: true,
 				sourceSkill: "mengwu",
@@ -278,7 +275,7 @@ export const skill = {
 				"_priority": 0,
 			},
 			"subskill3": {
-				enable: ["chooseToUse", "chooseToRespond"],
+				enable: ["chooseToUse"],
 				usable: Infinity,
 				locked: false,
 				filterCard: {
@@ -286,7 +283,7 @@ export const skill = {
 				},
 				viewAs: function (cards, player) {
 					var name = false;
-					switch (get.color(cards[0], player)) {
+					switch (get.color(cards[0])) {
 						case "red":
 							name = "lebu";
 							break;
@@ -300,7 +297,7 @@ export const skill = {
 					return player.countCards("hs") > 0;
 				},
 				position: "hs",
-				prompt: "将红色【杀】当做【乐不思蜀】使用或打出，黑色【杀】当做【兵粮寸断】使用或打出",
+				prompt: "将红色【杀】当做【乐不思蜀】使用，黑色【杀】当做【兵粮寸断】使用",
 				sub: true,
 				sourceSkill: "nihenbangle",
 				"_priority": 0,
@@ -431,7 +428,7 @@ export const skill = {
 				},
 				content: function () {
 					var stat = player.getStat().card;
-					if (typeof stat["sha"] === "number") {
+					if (typeof stat["sha"] == "number") {
 						stat["sha"]--;
 					}
 				},
@@ -1281,7 +1278,7 @@ export const skill = {
 					return event.num > 0 && player.countCards("he") >= event.num;
 				},
 				prompt2: function (event, player) {
-					return "是否弃置" + event.num + "张牌以取消此伤害，并视为对" + get.translation(event.source) + "使用一张【杀】？";
+					return "是否弃置" + event.num + "张牌以取消此对" + get.translation(event.player) +"的伤害，并视为对" + get.translation(event.source) + "使用一张【杀】？";
 				},
 				async content (event, trigger, player) {
 					const bool = await player.chooseToDiscard("he", trigger.num, true).forResultBool();
@@ -1426,7 +1423,18 @@ export const skill = {
 			await game.delay(3);
 			player.draw(player.maxHp);
 		},
-		locked: true,
+		forced: true,
+		locked: false,
+		charlotte: true,
+		trigger: {
+			player: "changeHp",
+		},
+		filter: function (event, player) {
+			return player.hp <= 0;
+		},
+		content: function () { 
+			player.die(event.source);
+		},
 	},
 	guangzhijian_chongneng: {
 		trigger: {
@@ -1455,7 +1463,7 @@ export const skill = {
 
 			switch (name) {
 				case "useCard":
-					if (get.type(trigger.card) === "trick") {
+					if (get.type(trigger.card) == "trick") {
 						num = 3;
 					} else {
 						num = 1;
@@ -1822,6 +1830,499 @@ export const skill = {
 		content: function () { 
 			player.recover();
 			player.draw();
+		},
+	},
+	"xunhangdaodan": {
+		mark: true,
+		marktext: "乐",
+		intro: {
+			name: "乐子",
+			content: function (storage, player) {
+				const str = "当前拥有" + player.countMark("xunhangdaodan") + "个【乐子】标记";
+				const skillGet = "<br>已获得【超绝飞弹】技能";
+				if (player.storage.xunhangdaodan_awakened) return str + skillGet;
+				return str;
+			} 
+		},
+		derivation: ["chaojuefeidan"],
+		group: ["xunhangdaodan_hp", "xunhangdaodan_die", "xunhangdaodan_toOne", "xunhangdaodan_awaken"],
+		subSkill: {
+			hp: {
+				trigger: {
+					global: ["changeHp", "changeMaxHp"],
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					// 获得1【乐子】标记
+					player.addMark("xunhangdaodan", 1, true);
+				},
+			},
+			die: {
+				trigger: {
+					global: "die",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					// 当有角色阵亡，获得2【乐子】标记
+					player.addMark("xunhangdaodan", 2, true);
+				},
+			},
+			toOne: {
+				trigger: {
+					player: "changeHp",
+				},
+				forced: true,
+				filter: function (event, player) {
+					// 当你体力变为1时触发
+					return player.hp == 1;
+				},
+				content: function () {
+					// 获得1【乐子】标记
+					player.addMark("xunhangdaodan", 5, true);
+				},
+			},
+			awaken: {
+				trigger: {
+					player: "phaseZhunbeiBegin",
+				},
+				forced: true,
+				locked: false,
+				skillAnimation: true,
+				filter: function (event, player) {
+					// 准备阶段，若【乐子】标记数不小于5
+					return player.countMark("xunhangdaodan") >= 5 && !player.storage.xunhangdaodan_awakened;
+				},
+				content: function () {
+					// 觉醒标记
+					player.awakenSkill("xunhangdaodan_awaken");
+					player.storage.xunhangdaodan_awakened = true;
+					
+					// 获得技能【超绝飞弹】
+					player.addSkill("chaojuefeidan");
+				},
+			},
+		},
+	},
+	chaojuefeidan: {
+		enable: "phaseUse",
+		usable: 1,
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			// 只能对其他角色使用
+			return target != player;
+		},
+		content: function () {
+			// 计算伤害值 x-3 (x为【乐子】标记数)
+			const num = player.countMark("xunhangdaodan");
+			const damageValue = num - 3;
+			
+			// 对目标造成伤害
+			if (damageValue > 0) {
+				event.target.damage(damageValue);
+			}
+			
+			// 令目标获得【破甲】
+			if (!event.target.hasSkill("chaojuefeidan_pojia")) {
+				event.target.addSkill("chaojuefeidan_pojia");
+				event.target.addMark("chaojuefeidan_pojia", 1, true);
+			}
+		},
+		subSkill: {
+			// 【破甲】的效果实现
+			pojia: {
+				marktext: "破",
+				intro: {
+					name: "破甲",
+					nocount: true,
+					content: "受到伤害时伤害值+1",
+				},
+				trigger: {
+					player: "damageBegin",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					// 伤害值+1
+					trigger.num++;
+				},
+			},
+		},
+	},
+	niaoshoushourenzhuli: {
+		group: ["niaoshoushourenzhuli_defense", "niaoshoushourenzhuli_thunder", "niaoshoushourenzhuli_dying"],
+		subSkill: {
+			defense: {
+				trigger: {
+					player: "damageBegin",
+				},
+				forced: true,
+				firstDo: true,
+				filter: function (event, player) {
+					// 不受黑色杀和南蛮入侵伤害
+					if (event.card) {
+						if (event.card.name == "sha" && get.color(event.card) == "black") return true;
+						if (event.card.name == "nanman") return true;
+					}
+					// 不受火焰伤害
+					if (event.nature == "fire") return true;
+					return false;
+				},
+				content: function () {
+					// 取消伤害
+					trigger.cancel();
+				},
+			},
+			thunder: {
+				trigger: {
+					player: "damageBegin",
+				},
+				forced: true,
+				filter: function (event, player) {
+					// 受到雷电伤害时伤害值-1
+					return event.nature == "thunder" && event.num > 0;
+				},
+				content: function () {
+					// 伤害值-1
+					trigger.num--;
+				},
+			},
+			dying: {
+				trigger: {
+					player: "dying",
+				},
+				filter: function (event, player) {
+					// 濒死时持有父标记和母标记
+					return player.countMark("jiuzhuandacheng_fu") > 0 && player.countMark("jiuzhuandacheng_mu") > 0;
+				},
+				content: function () {
+					// 获取父标记和母标记数量
+					var fuCount = player.countMark("jiuzhuandacheng_fu");
+					var muCount = player.countMark("jiuzhuandacheng_mu");
+					
+					// 失去所有父标记和母标记
+					player.removeMark("jiuzhuandacheng_fu", fuCount, true);
+					player.removeMark("jiuzhuandacheng_mu", muCount, true);
+					
+					// 弃置所有手牌
+					if (player.countCards("h") > 0) {
+						player.discard(player.getCards("h"));
+					}
+					
+					// 回复(x+y)/2体力（向下取整）
+					var recoverNum = Math.floor((trigger.fuCount + trigger.muCount) / 2);
+					if (recoverNum > 0) {
+						player.recover(recoverNum);
+					}
+				},
+			},
+		},
+	},
+	jiuzhuandacheng: {
+		locked: false,
+		init: function (player) {
+			// 初始化存储，用于记录橙子造成的伤害和回复的体力
+			// [伤害累计值, 回复累计值]
+			player.storage.jiuzhuandacheng = [0, 0];
+		},
+		group: ["jiuzhuandacheng_transfer", "jiuzhuandacheng_fu", "jiuzhuandacheng_mu"],
+		subSkill: {
+			transfer: {
+				trigger: {
+					player: "damageBegin",
+				},
+				locked: false,
+				prompt2: function (event, player) {
+					return "是否将此" + event.num + "点伤害转移给橙子？"
+				},
+				filter: function (event, player) {
+					// 检查是否有角色名为"橙子"的玩家在场
+					return game.hasPlayer(function (current) {
+						return current.name == "chengzi";
+					});
+				},
+				content: function () {
+					// 将伤害转移到橙子身上
+					var chengzi = game.findPlayer(function (current) {
+						return current.name == "chengzi";
+					});
+					
+					if (chengzi) {
+						trigger.player = chengzi;
+					}
+				},
+			},
+			fu: {
+				trigger: {
+					global: "damage",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					// 检查伤害来源是否为橙子
+					return event.source && event.source.name == "chengzi" && event.num > 0;
+				},
+				content: function () {
+					// 累计橙子造成的伤害
+					player.storage.jiuzhuandacheng[0] += trigger.num;
+					
+					// 每造成2点伤害，获得1个【父】标记
+					var now = player.storage.jiuzhuandacheng[0];
+					var add = Math.floor(now / 2);
+					if (add > 0) {
+						player.addMark("jiuzhuandacheng_fu", add, true);
+						player.storage.jiuzhuandacheng[0] -= 2 * add;
+					}
+				},
+				marktext: "父",
+				intro: {
+					name: "父",
+					content: "当前拥有#个【父】标记",
+				},
+			},
+			mu: {
+				trigger: {
+					global: "recoverAfter",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					// 检查回复体力的角色是否为橙子
+					return event.player.name == "chengzi";
+				},
+				content: function () {
+					// 累计橙子回复的体力
+					player.storage.jiuzhuandacheng[1] += trigger.num;
+					
+					// 每回复2点体力，获得1个【母】标记
+					var now = player.storage.jiuzhuandacheng[1];
+					var add = Math.floor(now / 2);
+					if (add > 0) {
+						player.addMark("jiuzhuandacheng_mu", add, true);
+						player.storage.jiuzhuandacheng[1] -= 2 * add;
+					}
+				},
+				marktext: "母",
+				intro: {
+					name: "母",
+					content: "当前拥有#个【母】标记",
+				},
+			},
+		},
+	},
+	aidechuanbo: {
+		init: function(player) { 
+			player.storage.aidechuanbo_transfer = null;
+		},
+		group: ["aidechuanbo_mark", "aidechuanbo_draw", "aidechuanbo_recover", "aidechuanbo_dying", "aidechuanbo_transfer"],
+		subSkill: {
+			mark: {
+				trigger: {
+					player: "phaseBegin",
+				},
+				async content (event, trigger, player) {
+					const result = await player.chooseTarget("令一名其他角色获得【<span style=\"color: #FFC0CB;\">❤</span>】标记", 1, function (card, player, target) {
+						return target != player && !target.hasSkill("aidechuanbo_ai");
+					}).set("ai", function (target) {
+						return get.attitude(player, target);
+					}).forResult();
+
+					if (result.bool) {
+						var target = result.targets[0];
+						target.addSkill("aidechuanbo_ai");
+						player.storage.aidechuanbo_transfer = target;
+						// player.markSkillCharacter("aidechuanbo_transfer", target, "爱的传播", "已标记" + get.translation(target));
+					}
+				},
+			},
+			ai: {
+				mark: true,
+				marktext: "<span style=\"color: #FFC0CB;\">❤</span>",
+				intro: {
+					name: "<span style=\"color: #FFC0CB;\">爱</span>",
+					nocount: true,
+					content: function(storage, player) { 
+						return "<span style=\"color: #FFC0CB;\">来自某不正经粉毛的爱</span>";
+					},
+				},
+			},
+			draw: {
+				trigger: {
+					global: "drawAfter",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return event.player.hasSkill("aidechuanbo_ai") && event.num > 0;
+				},
+				content: function () {
+					player.draw();
+				},
+			},
+			recover: {
+				trigger: {
+					global: "phaseEnd",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return event.player.hasSkill("aidechuanbo_ai");
+				},
+				content: function () {
+					player.recover();
+					trigger.player.recover();
+				},
+			},
+			dying: {
+				trigger: {
+					global: "dying",
+				},
+				prompt2: function (event, player) {
+					return "是否弃置" + player.maxHp + "张手牌将" + get.translation(event.player) + "体力回复至" + player.maxHp + "？"
+				},
+				filter: function (event, player) {
+					return event.player.hasSkill("aidechuanbo_ai") && player.getCards("h").length >= player.maxHp;
+				},
+				async content (event, trigger, player) {
+					var target = trigger.player;
+					var maxHp = player.maxHp;
+					const result = await player.chooseToDiscard("h", maxHp).set("ai", function (card) {
+						return get.value(card) * (target.hp < maxHp ? 1.5 : 1);
+					}).forResult();
+
+					if (result.bool) {
+						target.recoverTo(maxHp);
+					}
+				},
+			},
+			transfer: {
+				trigger: {
+					player: "damageBefore",
+				},
+				prompt2: function (event, player) { 
+					return "是否将此" + event.num + "伤害转移给" + get.translation(player.storage.aidechuanbo_transfer);
+				},
+				filter: function (event, player) {
+					if (player.storage.aidechuanbo_transfer == null) return false;
+					return player.storage.aidechuanbo_transfer.isAlive();
+				},
+				content: function () {
+					var target = player.storage.aidechuanbo_transfer;
+					trigger.player = target;
+				},
+			},
+		},
+	},
+	aishen: {
+		locked: false,
+		group: ["aishen_maxHandcard", "aishen_useCard", "aishen_disable", "aishen_useCardToPlayered", "aishen_lose", "aishen_useCardAfter"],
+		subSkill: {
+			maxHandcard: {
+				lastDo: true,
+				locked: true,
+				mod: {
+					maxHandcard: function (player, num) {
+						// 手牌上限始终为2x（x为体力上限）
+						return player.maxHp * 2;
+					},
+				},
+			},
+			useCard: {
+				locked: false,
+				mod: {
+					targetInRange: function (card, player, target, now) {
+						// 使用锦囊牌不受距离限制
+						if (["trick", "delay"].includes(get.type(card))) return true;
+					},
+				},
+			},
+			disable: {
+				locked: false,
+				mod: {
+					targetEnabled: function (card, player, target) {
+						// 无法成为【乐不思蜀】的目标
+						if (card.name == "lebu") return false;
+					},
+				},
+			},
+			useCardToPlayered: {
+				init: function (player) { 
+					player.storage.aishen_maxHp = 0;
+				},
+				trigger: {
+					player: "useCard",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					// 当使用的锦囊牌仅有1个目标时
+					if (!["trick", "delay"].includes(get.type(event.card))) return false;
+					if (player.storage.aishen_maxHp >= 7) return false; // 最多获得7体力上限
+					// 检查目标数是否为1
+					var targets = event.targets;
+					return targets && targets.length == 1;
+				},
+				content: function () {
+					// 体力上限+1
+					player.gainMaxHp();
+					player.storage.aishen_maxHp++;
+				},
+			},
+			lose: {
+				trigger: {
+					player: "loseEnd",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					// 当失去装备区的牌时
+					for (var i = 0; i < event.cards.length; i++) {
+						if (event.cards[i].original == "e") return true;
+					}
+				},
+				content: function () {
+					// 回复1体力
+					player.recover();
+				},
+			},
+			useCardAfter: {
+				trigger: {
+					target: "useCardToTargeted",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					// 目标包含你在内的锦囊牌结算完成后
+					if (!["trick", "delay"].includes(get.type(event.card))) return false;
+					return true;
+				},
+				content: function () {
+					// 回复1体力
+					player.recover();
+				},
+			},
+		},
+	},
+	fenseyaojing: {
+		enable: ["chooseToUse"],
+		filterCard: function (card, player) {
+			return get.color(card);
+		},
+		viewAs: function (cards, player) {
+			var name = false;
+			switch (get.color(cards[0])) {
+				case "red":
+					name = "lebu";
+					break;
+				case "black":
+					name = "juedou";
+					break;
+			}
+			if (name) return { name: name };
+		},
+		position: "hes",
+		prompt2: "将红色牌当做【乐不思蜀】使用或打出，黑色牌当做【决斗】使用或打出",
+		viewAsFilter: function (player) {
+			return player.countCards("hes") > 0;
 		},
 	},
 };
