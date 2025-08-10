@@ -41,9 +41,14 @@ export const intro = {
 	"yunjian": "慕璃的笨猫猫",
 	"ailisi": "爱打游戏的爱丽丝酱~",
 	"kaiyi": "吾之存在，为践行王女意志而生",
+	"chengzi": "为什么是橙子，因为诚子爱吃橙子，三角洲大肘子！",
+	"shijiu": "乌鲁鲁人柱力！",
+	"aili": "不正经的粉毛爱莉",
+	"lvren": "背上了行囊~行之无悔的旅人",
+	"zhizimeng": "man~肘击王牢梦是也",
 };
 
-export var character = {
+export const character = {
 	testcharacter: {
 		sex: "double",
 		group: "qunyou",
@@ -124,6 +129,19 @@ export var character = {
 		group: "waijing",
 		hp: 6,
 		skills: ["aidechuanbo", "aishen", "fenseyaojing"],
+	},
+	lvren: {
+		sex: "male",
+		group: "feisheng",
+		hp: 4,
+		skills: ["yuanxing", "xurui", "wuhui"],
+	},
+	zhizimeng: {
+		sex: "double",
+		group: "feisheng",
+		hp: 6,
+		maxHp: 20,
+		skills: ["huigui", "huizhang", "danchun", "huanzhai"],
 	},
 };
 

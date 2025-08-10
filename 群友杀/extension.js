@@ -3,6 +3,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 	const importCharacterData = () => import("./characterData.js");
 	const importCharacterSkill = () => import("./characterSkill.js");
 	const importTranslation = () => import("./translation.js");
+	const importCards = () => import("./cards.js");
 
 	return {
 		name: "群友杀",
@@ -56,6 +57,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				const characterData = await importCharacterData();
 				const characterSkill = await importCharacterSkill();
 				const translation = await importTranslation();
+				const cards = await importCards();
 
 				// 添加自定义势力
 				for (const groupId in characterData.groups) {
@@ -72,7 +74,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 						characterIntro: characterData.intro,
 						translate: {
 							...translation.character,
-							...translation.skill,
+							...translation.characterSkill,
 						},
 						perfectPair: {},
 					};
@@ -90,15 +92,13 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					var qunyousha = {
 						name: 'qunyousha',
 						connect: true,
-						card: {
-							// '卡名': {
-							// 	image: 'ext:群友杀/卡名.jpg',  //卡牌图片
-							//  //以下与一般卡牌一样
-							// }, //卡格式
+						card: cards.card,
+						skill: cards.skill,
+						translate: {
+							...translation.card,
+							...translation.cardSkill,
 						},
-						skill: {},
-						translate: {},
-						list: [], // 牌堆添加
+						list: cards.addList, // 牌堆添加
 					};
 					return qunyousha;
 				});
@@ -131,7 +131,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "云笺",
 			netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
-			version: "1.0.6",
+			version: "1.0.7",
 		}, files: {
 			"character": [],
 			"card": [],

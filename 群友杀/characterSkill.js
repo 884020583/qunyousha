@@ -93,7 +93,7 @@ export const skill = {
 				var judgeCard = await judgeMent.forResultCard();
 				if (judgeBool) {
 					event.cards.push(judgeCard);
-					continueBool = await player.chooseBool("是否再次发动【haqi】？")
+					continueBool = await player.chooseBool("是否再次发动【哈气！！！】？")
 						.forResultBool();
 				} else {
 					await player.$throw(event.cards, 1000);
@@ -111,7 +111,7 @@ export const skill = {
 							return num;
 						}).forResult('targets');
 						if (target[0]) {
-							game.log(player, "的【haqi】判定失败");
+							game.log(player, "的【哈气！！！】判定失败");
 							await target[0].damage(damage_num);
 							player.draw();
 						}
@@ -128,11 +128,26 @@ export const skill = {
 		},
 		"_priority": 0,
 	},
-	"test1": {
-
+	test1: {
+		trigger: {
+			player: "lose_[fangbaodun]",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			return true;
+		},
+		content: function () {
+			player.draw(5);
+		},
 	},
-	"test2": {
-
+	test2: {
+		enable: "phaseUse",
+		usable: 1,
+		content: function () {
+			var card = get.cardPile("fangbaodun");
+			player.gain(card, "draw");
+		},
 	},
 	mengwu: {
 		group: ["mengwu_subskill1", "mengwu_subskill2_sha", "mengwu_subskill2_trick"],
@@ -214,6 +229,9 @@ export const skill = {
 					global: "damageBegin",
 				},
 				locked: false,
+				prompt: function (event, player) { 
+					return "是否令此" + get.translation(event.card) + "对" + get.translation(event.player) + "的伤害+1";
+				},
 				filter: function (event, player) {
 					return event.source == player && event.num > 0 &&
 						event.card && event.card.name != "sha" && get.tag(event.card, "damage");
@@ -715,7 +733,9 @@ export const skill = {
 		async content(event, trigger, player) {
 			player.setMark("Permissions_subskill1", 0, true);
 			const num = Math.floor(Math.max(1, (event.targets[0].maxHp / 2)));
-			await player.gainPlayerCard(event.targets[0], "he", num, false);
+			await player.gainPlayerCard(event.targets[0], "he", num, false).set("ai", function (card) {
+				return get.value(card, player);
+			});
 		},
 	},
 	lingguang: {
@@ -839,7 +859,11 @@ export const skill = {
 				const targets = await player.chooseTarget("获得一名其他角色区域里的1张牌", 1,
 					(card, player, target) => target != player && target.getCards("hej").length > 0
 				).forResultTargets();
-				if (targets.length > 0) await player.gainPlayerCard(targets[0], "hej", 1, false);
+				if (targets.length > 0) {
+					await player.gainPlayerCard(targets[0], "hej", 1, false).set("ai", function (card) {
+						return get.value(card, player);
+					});
+				}
 			} else {
 				player.draw();
 				const bool = await player.chooseBool("是否交给一名其他角色1张牌？").forResultBool();
@@ -983,12 +1007,6 @@ export const skill = {
 		},
 	},
 	gongmian: {
-		init: function (player) {
-			if (!player.isZhu) {
-				player.removeSkill("gongmian_gain");
-				player.removeSkill("gongmian_phase");
-			}
-		},
 		locked: true,
 		group: ["gongmian_gain", "gongmian_phase"],
 		subSkill: {
@@ -1338,7 +1356,9 @@ export const skill = {
 					return event.source && event.source != player;
 				},
 				content: function () { 
-					player.gainPlayerCard(trigger.source, "hej", 1, false);
+					player.gainPlayerCard(trigger.source, "hej", 1, false).set("ai", function (card) {
+						return get.value(card, player);
+					});
 				},
 			},
 		},
@@ -1590,7 +1610,9 @@ export const skill = {
 				},
 				async content(event, trigger, player) {
 					// 进行判定
-					const judgeResult = await player.judge().forResult();
+					const judgeResult = await player.judge(function (card) {
+						return get.color(card) == "black" ? 1.5 : -1.5;
+					}).forResult();
 					// 若结果为黑色
 					if (get.color(judgeResult) == "black") {
 						// 失去1充能标记
@@ -2323,6 +2345,186 @@ export const skill = {
 		prompt2: "将红色牌当做【乐不思蜀】使用或打出，黑色牌当做【决斗】使用或打出",
 		viewAsFilter: function (player) {
 			return player.countCards("hes") > 0;
+		},
+	},
+	yuanxing: {
+		mod: {
+			maxHandcard: function (card, player) {
+				return Infinity;
+			},
+		},
+		group: ["yuanxing_draw", "yuanxing_gain"],
+		subSkill: {
+			draw: {
+				trigger: {
+					source: "damageAfter",
+					player: ["useCardAfter", "respondAfter"],
+				},
+				filter: function (event, player) {
+					if (event.name == "damage") return event.num > 0;
+					else return event.card && _status.currentPhase != player && ["sha", "shan", "wuxie"].includes(event.card.name);
+				},
+				prompt2: "你可以摸1张牌",
+				content: function () {
+					player.draw();
+				}
+			},
+			gain: {
+				trigger: {
+					global: "useSkill",
+				},
+				usable: 3,
+				filter: function (event, player) {
+					return event.player != player;
+				},
+				prompt2: function (event, player) {
+					return "你可以获得" + get.translation(event.player) +"的1张手牌";
+				},
+				async content (event, trigger, player) {
+					await player.gainPlayerCard(trigger.player, "h", 1, false).set("ai", function (card) {
+						return get.value(card, player);
+					});
+				},
+			},
+		},
+	},
+	xurui: {
+		trigger: {
+			global: "useCard",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) { 
+			return event.card && ["guohe", "shunshou"].includes(event.card.name) && event.targets.contains(player);
+		},
+		content: function () {
+			trigger.cancel();
+		},
+	},
+	wuhui: {
+		trigger: {
+			player: "damageBegin",
+		},
+		forced: true,
+		locked: false,
+		lastDo: true,
+		filter: function (event, player) {
+			return event.card && ["trick", "delay"].includes(get.type(event.card));
+		},
+		content: function () {
+			trigger.num = 0;
+		},
+	},
+	huigui: {
+		trigger: {
+			global: "phaseBegin",
+		},
+		forced: true,
+		locked: false,
+		async content(event, trigger, player) {
+			const result = await player.judge(function (card) {
+				return get.color(card) == "black" ? 1.5 : -1.5;
+			}).forResult();
+			if (result.color == "black") player.recover();
+		},
+	},
+	huizhang: {
+		mod: {
+			canBeReplaced: function (card, pkayer) {
+				// 防具无法被替换
+				if (get.type(card) == "equip2") return false;
+			},
+			canBeDiscarded: function (card, player, target) {
+				// 防具无法被弃置
+				if (get.type(card) == "equip2") return false;
+			}
+		},
+		trigger: {
+			global: "gameStart",
+			player: "enterGame",
+		},
+		forced: true,
+		locked: false,
+		content: function () {
+			// 创建防爆盾并装备
+			var card = game.createCard("fangbaodun", "heart", 13);
+			player.equip(card);
+		},
+		group: ["huizhang_lose", "huizhang_equip"],
+		subSkill: {
+			lose: {
+				trigger: {
+					player: "loseAfter",
+				},
+				forced: true,
+				locked: false,
+				popup: false,
+				filter: function (event, player) {
+					// 失去防具时重新装备
+					return event.es && event.es.some(card => get.subtype(card) == "equip2");
+				},
+				content: function () {
+					game.delay(0.5);
+					// var card = game.createCard("fangbaodun", "diamond", 1);
+					var card = null;
+					trigger.cards.forEach(function (now) {
+						if (now.name == "fangbaodun") {
+							card = now;
+							return;
+						}
+					})
+					player.equip(card);
+				},
+			},
+			equip: {
+				trigger: {
+					player: "equipBefore",
+				},
+				forced: true,
+				popup: false,
+				filter: function (event, player) {
+					// 尝试装备其他防具时阻止
+					return get.subtype(event.card) == "equip2" && event.card.name != "fangbaodun";
+				},
+				content: function () {
+					trigger.cancel();
+					game.log(player, "无法装备其他防具");
+				},
+			},
+		},
+	},
+	danchun: {
+		locked: false,
+		mod: {
+			targetEnabled: function (card, player, target) {
+				if (get.type(card) == "delay") return false;
+			},
+		},
+		ai: {
+			noCompareTarget: true,
+		},
+	},
+	huanzhai: {
+		trigger: {
+			global: "phaseEnd",
+		},
+		forced: true,
+		locked: false,
+		async content (event, trigger, player) {
+			var list = ["受到1伤害", "弃置2张手牌"];
+			if (player.countCards("h") < 2) list = ["受到1伤害"];
+			const result = await player.chooseControl(list).set("ai", function () {
+				if (player.hp > 3 || player.countCards("h") < 2) return list[0];
+				return list[1];
+			}).forResult();
+
+			if (result.control == list[0]) {
+				player.damage();
+			} else {
+				await player.chooseToDiscard("h", 2).set("ai", function (card) {
+					return 6 - get.value(card);
+				});
+			}
 		},
 	},
 };
