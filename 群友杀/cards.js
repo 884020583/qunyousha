@@ -38,7 +38,7 @@ export const card = {
 };
 
 export const skill = {
-    zhediedun_skill: {
+    fangbaodun_skill: {
         equipSkill: true,
         group: ["fangbaodun_skill_damage", "fangbaodun_skill_overflow", "fangbaodun_skill_draw"],
         subSkill: {
