@@ -2135,13 +2135,16 @@ export const skill = {
 	},
 	aidechuanbo: {
 		init: function(player) { 
-			player.storage.aidechuanbo_transfer = null;
+			player.storage.aidechuanbo_mark = null;
 		},
 		group: ["aidechuanbo_mark", "aidechuanbo_draw", "aidechuanbo_recover", "aidechuanbo_dying", "aidechuanbo_transfer"],
 		subSkill: {
 			mark: {
 				trigger: {
 					player: "phaseBegin",
+				},
+				filter: function (event, player) { 
+					return player.storage.aidechuanbo_mark == null;
 				},
 				async content (event, trigger, player) {
 					const result = await player.chooseTarget("令一名其他角色获得【<span style=\"color: #FFC0CB;\">❤</span>】标记", 1, function (card, player, target) {
@@ -2153,8 +2156,7 @@ export const skill = {
 					if (result.bool) {
 						var target = result.targets[0];
 						target.addSkill("aidechuanbo_ai");
-						player.storage.aidechuanbo_transfer = target;
-						// player.markSkillCharacter("aidechuanbo_transfer", target, "爱的传播", "已标记" + get.translation(target));
+						player.storage.aidechuanbo_mark = target;
 					}
 				},
 			},
@@ -2221,14 +2223,15 @@ export const skill = {
 					player: "damageBefore",
 				},
 				prompt2: function (event, player) { 
-					return "是否将此" + event.num + "伤害转移给" + get.translation(player.storage.aidechuanbo_transfer);
+					return "是否将此" + event.num + "伤害转移给" + get.translation(player.storage.aidechuanbo_mark);
 				},
 				filter: function (event, player) {
-					if (player.storage.aidechuanbo_transfer == null) return false;
-					return player.storage.aidechuanbo_transfer.isAlive();
+					if (player.storage.aidechuanbo_mark == null) return false;
+					return player.storage.aidechuanbo_mark.isAlive();
 				},
 				content: function () {
-					var target = player.storage.aidechuanbo_transfer;
+					var target = player.storage.aidechuanbo_mark;
+					player.storage.aidechuanbo_mark = null;
 					trigger.player = target;
 				},
 			},
