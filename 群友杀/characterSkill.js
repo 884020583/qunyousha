@@ -1,10 +1,12 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
+import { intro } from './characterData.js';
 export const skill = {
 	keai: {
 		trigger: {
 			player: "damageBegin",
 		},
 		forced: true,
+		locked: false,
 		filter: function (event, player) {
 			return event.card &&
 				(event.card.name == "sha" || (get.tag(event.card, "damage") && get.type(event.card) == "trick"));
@@ -26,6 +28,22 @@ export const skill = {
 		mod: {
 			maxHandcard: function (player, num) {
 				return num + player.hp;
+			},
+		},
+		group: ["keai_draw"],
+		subSkill: {
+			draw: {
+				trigger: {
+					player: "damageAfter",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				content: function () {
+					player.draw();
+				},
 			},
 		},
 		"_priority": 0,
@@ -129,24 +147,25 @@ export const skill = {
 		"_priority": 0,
 	},
 	test1: {
-		trigger: {
-			player: "lose_[fangbaodun]",
-		},
-		forced: true,
-		locked: false,
-		filter: function (event, player) {
-			return true;
+		enable: "phaseUse",
+		usable: 1,
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player;
 		},
 		content: function () {
-			player.draw(5);
+			targets[0].damage(3, "thunder");
 		},
 	},
 	test2: {
 		enable: "phaseUse",
 		usable: 1,
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player;
+		},
 		content: function () {
-			var card = get.cardPile("fangbaodun");
-			player.gain(card, "draw");
+			targets[0].damage(3, "fire");
 		},
 	},
 	mengwu: {
@@ -409,20 +428,20 @@ export const skill = {
 		usable: Infinity,
 		selectTarget: 1,
 		filterTarget: function (card, player, target) {
-			return target != player && !target.hasMark("hufeng");
+			return target != player && !target.hasMark("狐封");
 		},
 		content: function () {
-			player.loseHp(2);
-			game.log(lib.translate[target.name] + "获得了【hufeng】标记");
-			target.setMark("hufeng", 1, false);
+			player.loseHp();
+			target.addMark("hufeng", 1, true);
 			target.addTempSkill(["baiban", "hufeng_subskill_removeMark"], "phaseAfter");
-			// player.addTempSkill("hufeng_subskill_sha", "phaseAfter");
+			target.storage.hufeng_source = player;
 		},
 		marktext: "封",
 		intro: {
 			name: "狐封",
+			nocount: true,
 			content: function (storage, player) {
-				return "该角色在本回合内所有技能失效，且" + get.translation("huli") + "对其使用【杀】无次数限制";
+				return "该角色在本回合内所有技能失效，且" + get.translation(player.storage.hufeng_source) + "对其使用【杀】无次数限制";
 			},
 			nocount: true,
 		},
@@ -431,8 +450,8 @@ export const skill = {
 			"subskill_removeMark": {
 				charlotte: true,
 				onremove: function (player) {
-					game.log(lib.translate[player.name] + "失去了【hufeng】标记");
-					player.removeMark("hufeng", 1, false);
+					player.removeMark("hufeng", 1, true);
+					delete player.storage.hufeng_source;
 				},
 			},
 			"subskill_sha": {
@@ -440,6 +459,7 @@ export const skill = {
 					player: "useCard",
 				},
 				forced: true,
+				locked: false,
 				charlotte: true,
 				filter: function (event, player) {
 					return event.card.name == "sha" && event.targets[0].hasMark("hufeng");
@@ -543,6 +563,19 @@ export const skill = {
 					nocount: true,
 				},
 			},
+		},
+	},
+	heshu: {
+		trigger: {
+			player: "loseEnd",
+		},
+		filter: function (event, player) {
+			return player.countCards("h") < 3;
+		},
+		forced: true,
+		locked: false,
+		content: function () { 
+			player.drawTo(3);
 		},
 	},
 	Restrict: {
@@ -1728,11 +1761,19 @@ export const skill = {
 				},
 				forced: true,
 				locked: false,
+				popup: false,
 				content: function () {
 					if (!player.storage.lurenwangdefanying.defend) {
-						player.addMark("lurenwangdefanying_damage", 1, true);
-						player.storage.lurenwangdefanying.defend = true;
+						if (Math.random() <= 0.3) {
+							player.logSkill("lurenwangdefanying_damage");
+							trigger.num = 0;
+						} else {
+							player.logSkill("lurenwangdefanying_damage");
+							player.addMark("lurenwangdefanying_damage", 1, true);
+							player.storage.lurenwangdefanying.defend = true;
+						}
 					} else {
+						player.logSkill("lurenwangdefanying_damage");
 						trigger.num = 0;
 						player.removeMark("lurenwangdefanying_damage", 1, true);
 						player.storage.lurenwangdefanying.defend = false;
@@ -1871,10 +1912,13 @@ export const skill = {
 		subSkill: {
 			hp: {
 				trigger: {
-					global: ["changeHp", "changeMaxHp"],
+					global: "changeHpAfter",
 				},
 				forced: true,
 				locked: false,
+				filter: function (event, player) {
+					return event.num < 0;
+				},
 				content: function () {
 					// 获得1【乐子】标记
 					player.addMark("xunhangdaodan", 1, true);
@@ -1913,8 +1957,8 @@ export const skill = {
 				locked: false,
 				skillAnimation: true,
 				filter: function (event, player) {
-					// 准备阶段，若【乐子】标记数不小于5
-					return player.countMark("xunhangdaodan") >= 5 && !player.storage.xunhangdaodan_awakened;
+					// 准备阶段，若【乐子】标记数不小于10
+					return player.countMark("xunhangdaodan") >= 10 && !player.storage.xunhangdaodan_awakened;
 				},
 				content: function () {
 					// 觉醒标记
@@ -1938,42 +1982,21 @@ export const skill = {
 		content: function () {
 			// 计算伤害值 x-3 (x为【乐子】标记数)
 			const num = player.countMark("xunhangdaodan");
-			const damageValue = num - 3;
+			const damageValue = num - 9;
 			
 			// 对目标造成伤害
 			if (damageValue > 0) {
-				event.target.damage(damageValue);
+				target.damage(damageValue);
 			}
 			
 			// 令目标获得【破甲】
-			if (!event.target.hasSkill("chaojuefeidan_pojia")) {
-				event.target.addSkill("chaojuefeidan_pojia");
-				event.target.addMark("chaojuefeidan_pojia", 1, true);
+			if (target.getEquip(2)) {
+				target.discard(target.getEquip(2));
 			}
-		},
-		subSkill: {
-			// 【破甲】的效果实现
-			pojia: {
-				marktext: "破",
-				intro: {
-					name: "破甲",
-					nocount: true,
-					content: "受到伤害时伤害值+1",
-				},
-				trigger: {
-					player: "damageBegin",
-				},
-				forced: true,
-				locked: false,
-				content: function () {
-					// 伤害值+1
-					trigger.num++;
-				},
-			},
 		},
 	},
 	niaoshoushourenzhuli: {
-		group: ["niaoshoushourenzhuli_defense", "niaoshoushourenzhuli_thunder", "niaoshoushourenzhuli_dying"],
+		group: ["niaoshoushourenzhuli_defense", "niaoshoushourenzhuli_nature", "niaoshoushourenzhuli_dying"],
 		subSkill: {
 			defense: {
 				trigger: {
@@ -1982,31 +2005,24 @@ export const skill = {
 				forced: true,
 				firstDo: true,
 				filter: function (event, player) {
-					// 不受黑色杀和南蛮入侵伤害
 					if (event.card) {
 						if (event.card.name == "sha" && get.color(event.card) == "black") return true;
-						if (event.card.name == "nanman") return true;
 					}
-					// 不受火焰伤害
-					if (event.nature == "fire") return true;
 					return false;
 				},
 				content: function () {
-					// 取消伤害
 					trigger.cancel();
 				},
 			},
-			thunder: {
+			nature: {
 				trigger: {
 					player: "damageBegin",
 				},
 				forced: true,
 				filter: function (event, player) {
-					// 受到雷电伤害时伤害值-1
-					return event.nature == "thunder" && event.num > 0;
+					return (event.nature == "thunder" || event.nature == "fire") && event.num > 0;
 				},
 				content: function () {
-					// 伤害值-1
 					trigger.num--;
 				},
 			},
@@ -2143,9 +2159,6 @@ export const skill = {
 				trigger: {
 					player: "phaseBegin",
 				},
-				filter: function (event, player) { 
-					return player.storage.aidechuanbo_mark == null;
-				},
 				async content (event, trigger, player) {
 					const result = await player.chooseTarget("令一名其他角色获得【<span style=\"color: #FFC0CB;\">❤</span>】标记", 1, function (card, player, target) {
 						return target != player && !target.hasSkill("aidechuanbo_ai");
@@ -2155,6 +2168,8 @@ export const skill = {
 
 					if (result.bool) {
 						var target = result.targets[0];
+						var last = player.storage.aidechuanbo_mark;
+						if (last) last.removeSkill("aidechuanbo_ai");
 						target.addSkill("aidechuanbo_ai");
 						player.storage.aidechuanbo_mark = target;
 					}
@@ -2222,6 +2237,7 @@ export const skill = {
 				trigger: {
 					player: "damageBefore",
 				},
+				round: 1,
 				prompt2: function (event, player) { 
 					return "是否将此" + event.num + "伤害转移给" + get.translation(player.storage.aidechuanbo_mark);
 				},
@@ -2231,8 +2247,8 @@ export const skill = {
 				},
 				content: function () {
 					var target = player.storage.aidechuanbo_mark;
-					player.storage.aidechuanbo_mark = null;
 					trigger.player = target;
+					this.trigger.num = 1;
 				},
 			},
 		},
@@ -2328,7 +2344,8 @@ export const skill = {
 		},
 	},
 	fenseyaojing: {
-		enable: ["chooseToUse"],
+		enable: "chooseToUse",
+		usable: 3,
 		filterCard: function (card, player) {
 			return get.color(card);
 		},
@@ -2453,7 +2470,7 @@ export const skill = {
 			var card = game.createCard("fangbaodun", "heart", 13);
 			player.equip(card);
 		},
-		group: ["huizhang_lose", "huizhang_equip"],
+		group: ["huizhang_lose", "huizhang_equip", "huizhang_draw", "huizhang_remove"],
 		subSkill: {
 			lose: {
 				trigger: {
@@ -2484,6 +2501,7 @@ export const skill = {
 					player: "equipBefore",
 				},
 				forced: true,
+				locked: false,
 				popup: false,
 				filter: function (event, player) {
 					// 尝试装备其他防具时阻止
@@ -2492,6 +2510,30 @@ export const skill = {
 				content: function () {
 					trigger.cancel();
 					game.log(player, "无法装备其他防具");
+				},
+			},
+			draw: {
+				trigger: {
+					player: "damage",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return event.num > 0 && player.countCards("h") < player.hp && player.maxHp - player.hp > 0;
+				},
+				content: function () {
+					player.draw(player.maxHp - player.hp);
+				},
+			},
+			remove: {
+				trigger: {
+					player: "dying",
+				},
+				forced: true,
+				locked: false,
+				content: function () { 
+					player.recover();
+					player.removeSkill("huizhang");
 				},
 			},
 		},
@@ -2517,17 +2559,150 @@ export const skill = {
 			var list = ["受到1伤害", "弃置2张手牌"];
 			if (player.countCards("h") < 2) list = ["受到1伤害"];
 			const result = await player.chooseControl(list).set("ai", function () {
-				if (player.hp > 3 || player.countCards("h") < 2) return list[0];
+				if (player.countCards("h") < 2) return list[0];
 				return list[1];
 			}).forResult();
 
 			if (result.control == list[0]) {
 				player.damage();
 			} else {
-				await player.chooseToDiscard("h", 2).set("ai", function (card) {
+				await player.chooseToDiscard("h", 2, true).set("ai", function (card) {
 					return 6 - get.value(card);
 				});
 			}
+		},
+	},
+	koukoukongjian: {
+		trigger: {
+			player: "phaseBegin",
+		},
+		prompt2: "是否选择至多2名其他角色获得【bt】标记",
+		filter: function (event, player) {
+			return game.hasPlayer(function (current) {
+				return !current.hasSkill("koukoukongjian_bt");
+			});
+		},
+		async content (event, trigger, player) {
+			const result = await player.chooseTarget([1, 2], function (card, player, target) {
+				return target != player && !target.hasSkill("koukoukongjian_bt");
+			}).set("ai", function () {
+				return get.attitude(player, target);
+			}).forResult();
+			if (result.bool) {
+				const targets = result.targets;
+				targets.forEach(function (target) {
+					target.addSkill("koukoukongjian_bt");
+				});
+				for (var target of targets) {
+					if (target.hasSkill("koukoukongjian_bt")) {
+						const num = game.filterPlayer(current => {
+							return current.hasSkill("koukoukongjian_bt") && current != player;
+						}).length;
+						if (num > 0) player.recover(num);
+						return;
+					}
+				}
+			}
+		},
+		group: ["koukoukongjian_bt", "koukoukongjian_maxHp"],
+		subSkill: {
+			bt: {
+				mark: true,
+				marktext: "bt",
+				intro: {
+					name: "bt",
+					nocount: true,
+					content: "heitai!"
+				},
+				trigger: {
+					player: "damageEnd",
+				},
+				forced: true,
+				locked: false,
+				charlotte: true,
+				filter: function (event, player) {
+					return event.num > 0 && event.source && !event.source.hasSkill("koukoukongjian_koukou");
+				},
+				async content (event, trigger, player) { 
+					trigger.source.addSkill("koukoukongjian_koukou");
+					trigger.source.loseMaxHp();
+				},
+			},
+			koukou: {
+				mark: true,
+				marktext: "扣",
+				intro: {
+					name: "扣扣",
+					nocount: true,
+					content: "扣死你~",
+				},
+				forced: true,
+				locked: false,
+				charlotte: true,
+				superCharlotte: true,
+			},
+			maxHp: {
+				trigger: {
+					global: "loseMaxHpAfter",
+				},
+				forced: true,
+				locked: false,
+				charlotte: true,
+				superCharlotte: true,
+				filter: function (event, player) {
+					return event.num > 0 && event.player.hasSkill("koukoukongjian_koukou");
+				},
+				content: function () {
+					player.gainMaxHp();
+				},
+			},
+		},
+	},
+	wobinida: {
+		trigger: {
+			player: "damageBegin",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			return event.num > 0 && player.hp > 1;
+		},
+		content: function () { 
+			trigger.num++;
+			const targer = trigger.source;
+			if (targer) {
+				const num = Math.max(1, Math.ceil((targer.maxHp - targer.hp) / 2));
+				trigger.source.damage(num);
+			}
+		},
+	},
+	woyizhidouzai: {
+		trigger: {
+			player: "changeHpAfter",
+		},
+		forced: true,
+		locked: false,
+		lastDo: true,
+		filter: function (event, player) {
+			return event.num < 1 && player.hp < 1 && player.countCards("h") > 0;
+		},
+		content: function () {
+			player.hp = 1;
+		},
+	},
+	chuangzaozhelianjie: {
+		trigger: {
+			player: "loseBefore",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			return game.hasPlayer(function (current) {
+				return current.name == "yuchuanluo";
+			});
+		},
+		content: function () { 
+			trigger.cancel();
 		},
 	},
 };

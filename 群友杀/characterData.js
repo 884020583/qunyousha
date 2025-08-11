@@ -3,49 +3,56 @@ export const groups = {
 		short: "群友",
 		name: "群友",
 		color: "#FFD700",
-		image: "./extension/群友杀/image/groups/qunyou.jpg"
+		image: "./extension/群友杀/image/groups/qunyou.png",
 	},
 	zako: {
 		short: "zako派",
 		name: "zako派",
-		color: "#87CEEB"
+		color: "#87CEEB",
+		image: "./extension/群友杀/image/groups/zako.png",
 	},
 	waijing: {
 		short: "歪经派",
 		name: "歪经派",
-		color: "#32CD32"
+		color: "#32CD32",
+		image: "./extension/群友杀/image/groups/waijing.png",
 	},
 	feisheng: {
 		short: "飞升派",
 		name: "飞升派",
-		color: "#BA55D3"
+		color: "#BA55D3",
+		image: "./extension/群友杀/image/groups/feisheng.png",
 	},
 	shigan: {
 		short: "实干派",
 		name: "实干派",
-		color: "#FF4500"
+		color: "#FF4500",
+		image: "./extension/群友杀/image/groups/shigan.png",
 	},
 	aoye: {
 		short: "熬夜派",
 		trannameslation: "熬夜派",
-		color: "#2F4F4F"
+		color: "#2F4F4F",
+		image: "./extension/群友杀/image/groups/aoye.png",
 	}
 };
 
 export const intro = {
-	"testcharacter": "一个测试用角色",
-	"KK_jiang": "一只可爱的KK猫哦~",
-	"lianyu": "可以摸摸尾巴的小教主",
-	"huli": "护食的狐仙狐黎",
-	"Censored": "哦我的天哪，这[Censored]的可太[Censored]了，这[Censored]绝对是我见过最[Censored]的东西！不！知！所！措！",
-	"yunjian": "慕璃的笨猫猫",
-	"ailisi": "爱打游戏的爱丽丝酱~",
-	"kaiyi": "吾之存在，为践行王女意志而生",
-	"chengzi": "为什么是橙子，因为诚子爱吃橙子，三角洲大肘子！",
-	"shijiu": "乌鲁鲁人柱力！",
-	"aili": "不正经的粉毛爱莉",
-	"lvren": "背上了行囊~行之无悔的旅人",
-	"zhizimeng": "man~肘击王牢梦是也",
+	testcharacter: "一个测试用角色",
+	KK_jiang: "一只可爱的KK猫哦~",
+	lianyu: "可以摸摸尾巴的小教主",
+	huli: "护食的狐仙狐黎",
+	Censored: "哦我的天哪，这[Censored]的可太[Censored]了，这[Censored]绝对是我见过最[Censored]的东西！不！知！所！措！",
+	yunjian: "慕璃的笨猫猫",
+	Hina: "空崎日奈（不正经）",
+	ailisi: "爱打游戏的爱丽丝酱~",
+	kaiyi: "吾之存在，为践行王女意志而生",
+	chengzi: "为什么是橙子，因为诚子爱吃橙子，三角洲大肘子！",
+	shijiu: "乌鲁鲁人柱力！",
+	aili: "不正经的粉毛爱莉",
+	lvren: "背上了行囊~行之无悔的旅人",
+	zhizimeng: "man~肘击王牢梦是也",
+	dajiejie: "“扣死你~”歪经的大姐姐如是说",
 };
 
 export const character = {
@@ -75,7 +82,7 @@ export const character = {
 		sex: "male",
 		group: "waijing",
 		hp: 5,
-		skills: ["hufeng", "dengxian", "nizhendehenbang"],
+		skills: ["hufeng", "dengxian", "nizhendehenbang", "heshu"],
 	},
 	Censored: {
 		sex: "none",
@@ -115,7 +122,7 @@ export const character = {
 	chengzi: {
 		sex: "male",
 		group: "feisheng",
-		hp: 6,
+		hp: 8,
 		skills: ["feitiandazhou", "lurenwangdefanying", "chudifantan", "jiuchengsanwujin"],
 	},
 	shijiu: {
@@ -140,9 +147,18 @@ export const character = {
 		sex: "double",
 		group: "feisheng",
 		hp: 6,
-		maxHp: 20,
+		maxHp: 12,
 		skills: ["huigui", "huizhang", "danchun", "huanzhai"],
+	},
+	dajiejie: {
+		sex: "male",
+		group: "waijing",
+		hp: 2,
+		isZhugong: true,
+		skills: ["koukoukongjian", "wobinida", "woyizhidouzai", "chuangzaozhelianjie"],
 	},
 };
 
-export const title = {};
+export const title = {
+
+};

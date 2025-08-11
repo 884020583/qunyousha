@@ -40,7 +40,7 @@ export const card = {
 export const skill = {
     fangbaodun_skill: {
         equipSkill: true,
-        group: ["fangbaodun_skill_damage", "fangbaodun_skill_overflow", "fangbaodun_skill_draw"],
+        group: ["fangbaodun_skill_damage", "fangbaodun_skill_overflow"],
         subSkill: {
             damage: {
                 equipSkill: true,
@@ -51,7 +51,8 @@ export const skill = {
                 forced: true,
                 locked: false,
                 filter: function (event, player) {
-                    return event.card && ((event.card.name == "sha" && !event.card.nature) || event.card.name == "wanjian");
+                    return event.card && ((event.card.name == "sha" && !event.card.nature && event.card.color == "red") 
+                        || (get.type(event.card) == "trick" && get.tag(event.card, "damage" && event.card.color == "black")));
                 },
                 content: function () {
                     trigger.num = 0;
@@ -66,24 +67,10 @@ export const skill = {
                 forced: true,
                 locked: false,
                 filter: function (event, player) {
-                    return event.num > 1;
+                    return event.num > 2;
                 },
                 content: function () {
-                    trigger.num = 1;
-                },
-            },
-            draw: {
-                equipSkill: true,
-                trigger: {
-                    player: "damage",
-                },
-                forced: true,
-                locked: false,
-                filter: function (event, player) {
-                    return event.num > 0 && player.countCards("h") < player.hp && player.maxHp - player.hp > 0;
-                },
-                content: function () {
-                    player.draw(player.maxHp - player.hp);
+                    trigger.num = 2;
                 },
             },
         },
