@@ -53,6 +53,7 @@ export const intro = {
 	lvren: "背上了行囊~行之无悔的旅人",
 	zhizimeng: "man~肘击王牢梦是也",
 	dajiejie: "“扣死你~”歪经的大姐姐如是说",
+	manbu: "漫步~漫步·~哈基米漫步~（哔---）",
 };
 
 export const character = {
@@ -151,11 +152,18 @@ export const character = {
 		skills: ["huigui", "huizhang", "danchun", "huanzhai"],
 	},
 	dajiejie: {
-		sex: "male",
+		sex: "female",
 		group: "waijing",
 		hp: 2,
 		isZhugong: true,
 		skills: ["koukoukongjian", "wobinida", "woyizhidouzai", "chuangzaozhelianjie"],
+	},
+	manbu: {
+		sex: "male",
+		group: "zako",
+		hp: 4,
+		isZhugong: true,
+		skills: ["huahaimanbu", "manbomanbo", "manyou", "zako_dejiban"],
 	},
 };
 
