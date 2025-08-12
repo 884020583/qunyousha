@@ -129,7 +129,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			},
 			intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
 			author: "云笺",
-			netdisk: "https://qm.qq.com/q/DKBfxgqP4G",
+			netdisk: "https://github.com/884020583/qunyousha/tree/main",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
 			version: "1.0.9",
 		}, files: {
