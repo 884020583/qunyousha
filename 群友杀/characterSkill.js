@@ -158,14 +158,14 @@ export const skill = {
 		},
 	},
 	test2: {
-		enable: "phaseUse",
-		usable: 1,
-		selectTarget: 1,
+		trigger: {
+			source: "damage",
+		},
 		filterTarget: function (card, player, target) {
-			return target != player;
+			return event.source;
 		},
 		content: function () {
-			targets[0].damage(3, "fire");
+			event.targets[0].discard(target.getCards("h"));
 		},
 	},
 	mengwu: {
@@ -880,7 +880,6 @@ export const skill = {
 	},
 	jianqi: {
 		enable: "phaseUse",
-		usable: Infinity,
 		zhuanhuanji: true,
 		filter: function (event, player) {
 			return player.countMark("lingguang") >= 10;
@@ -1153,7 +1152,8 @@ export const skill = {
 					if (get.color(trigger) == "black") {
 						trigger.baseDamage++;
 					} else {
-						trigger.target.addTempSkill("qinggang2", "shaEnd");
+						trigger.target.addTempSkill("qinggang2");
+						trigger.target.markSkill("qinggang2");
 					}
 				},
 			},
@@ -2715,24 +2715,19 @@ export const skill = {
 		},
 	},
 	chuangzaozhelianjie: {
-		init: function (player) {
-			if (!game.hasPlayer(function (current) {
-				return current.name == "yuchuanluo";
-			})) player.removeSkill("chuangzaozhelianjie");
-		},
 		trigger: {
-			player: "loseBefore",
+			player: "dyingBefore",
 		},
 		forced: true,
 		locked: false,
 		filter: function (event, player) {
 			const yuchuanluo = game.findPlayer(function (current) {
-				return current.name == "yuchuanluo";
+				return current.name == "yuchuanluo" && current.isAlive();
 			});
-			return yuchuanluo.isAlive() && event.getParent("useSkill");
+			return yuchuanluo && event.getParent("useSkill");
 		},
-		content: function () { 
-			trigger.cancel();
+		content: function () {
+			player.recoverTo(1);
 		},
 	},
 	huahaimanbu: {
@@ -2972,6 +2967,152 @@ export const skill = {
 					player.removeSkill("manyou_defendContent");
 				},
 			},
+		},
+	},
+	shujugongxiang: {
+		init: function (player) {
+			if (player.identity != "zhu") player.removeSkill("shujugongxiang");
+		},
+		trigger: {
+			global: "useSkill",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			return event.skill && event.skill != "_recasting";
+		},
+		content: function () {
+			player.draw(3);
+		},
+		mod: {
+			maxHandcard: function (player, num) {
+				return num + 1;
+			},
+		},
+	},
+	bug: {
+		locked: false,
+		mod: {
+			maxHandcard: function (player, num) {
+				return num + 2;
+			},
+		},
+		group: ["bug_recover", "bug_cancel", "bug_dying"],
+		subSkill: {
+			recover: {
+				trigger: {
+					player: "addJudgeBegin",
+				},
+				forced: true,
+				locked: false,
+				filter: function (event, player) {
+					return event.card;
+				},
+				content: function () { 
+					player.recover();
+				},
+			},
+			cancel: { 
+				trigger: {
+					global: "dyingBegin",
+				},
+				locked: false,
+				prompt2: function (event, player) {
+					return "是否弃置2张手牌以将" + get.translation(event.player) + "的体力回复至1？";
+				},
+				filter: function (event, player) {
+					return event.player != player && player.countCards("h") >= 2;
+				},
+				async content (event, trigger, player) {
+					await player.discardPlayerCard(player, "h", 2, true).set("ai", card => get.value(card));
+					trigger.player.recoverTo(1);
+				},
+			},
+			dying: {
+				trigger: {
+					player: "dyingBegin",
+				},
+				forced: true,
+				locked: false,
+				content: function () {
+					player.recover(player.maxHp);
+					player.gainMaxHp(2);
+					player.removeSkill("bug");
+					player.addSkill("fanghuoqiang");
+				},
+				derivation: ["fanghuoqiang"],
+			},
+		},
+	},
+	fanghuoqiang: {
+		group: ["fanghuoqiang_delay", "fanghuoqiang_overflow", "fanghuoqiang_cancel"],
+		subSkill: {
+			delay: {
+				trigger: {
+					target: "useCardToTargeted",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return event.card && get.type(event.card) == "delay";
+				},
+				content: function () { 
+					player.recover();
+					player.gainMaxHp();
+				},
+			},
+			overflow: { 
+				trigger: {
+					player: "damageBefore",
+				},
+				lastDo: true,
+				forced: true,
+				filter: function (event, player) {
+					return event.num > 2;
+				},
+				content: function () {
+					trigger.num = 2;
+				},
+			},
+			cancel: {
+				trigger: {
+					player: "damageBegin",
+				},
+				lastDo: true,
+				prompt2: function (event, player) {
+					return "是否弃置" + event.num + "张牌以取消此" + event.num + "伤害？"
+				},
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				async content (event, trigger, player) {
+					await player.discardPlayerCard("he", player, trigger.num, true);
+					trigger.num = 0;
+				},
+			},
+		},
+	},
+	lianxieguankong: { 
+		trigger: {
+			source: "damageEnd",
+		},
+		forced: true,
+		locked: false,
+		filter: function (event, player) {
+			const dajiejie = game.findPlayer(function (current) {
+				return current.name == "dajiejie" && current.isAlive();
+			});
+			return dajiejie && event.num > 0;
+		},
+		async content (event, trigger, player) {
+			const target = trigger.player;
+			if (target.countCards("e") > 0) {
+				await player.discardPlayerCard(target, "e", 1, true);
+			} else if (target.countCards("h") > 0) {
+				await player.discardPlayerCard(target, "h", Math.min(2, target.countCards("h")), true);
+			} else {
+				target.loseHp();
+				player.loseHp();
+			}
 		},
 	},
 };

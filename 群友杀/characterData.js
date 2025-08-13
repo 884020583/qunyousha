@@ -54,6 +54,7 @@ export const intro = {
 	zhizimeng: "man~肘击王牢梦是也",
 	dajiejie: "“扣死你~”歪经的大姐姐如是说",
 	manbu: "漫步~漫步·~哈基米漫步~（哔---）",
+	yuchuanluo: "羽川川川川川川川洛<br>Raaaaaaaaaaku！！！",
 };
 
 export const character = {
@@ -164,6 +165,14 @@ export const character = {
 		hp: 4,
 		isZhugong: true,
 		skills: ["huahaimanbu", "manbomanbo", "manyou", "zako_dejiban"],
+	},
+	yuchuanluo: {
+		sex: "double",
+		group: "waijing",
+		hp: 4,
+		maxHp: 5,
+		isZhugong: true,
+		skills: ["shujugongxiang", "bug", "lianxieguankong"],
 	},
 };
 

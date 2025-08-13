@@ -131,7 +131,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "云笺",
 			netdisk: "https://github.com/884020583/qunyousha/tree/main",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
-			version: "1.0.9",
+			version: "1.0.10",
 		}, files: {
 			"character": [],
 			"card": [],
