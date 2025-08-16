@@ -55,6 +55,8 @@ export const intro = {
 	dajiejie: "“扣死你~”歪经的大姐姐如是说",
 	manbu: "漫步~漫步·~哈基米漫步~（哔---）",
 	yuchuanluo: "羽川川川川川川川洛<br>Raaaaaaaaaaku！！！",
+	kongmeng: "你这只弱受杂鱼猫娘！",
+	xiaoxiao: "群里的经典夜猫子的说",
 };
 
 export const character = {
@@ -72,7 +74,7 @@ export const character = {
 		group: "zako",
 		hp: 4,
 		dualSideCharacter: "testcharacter",
-		skills: ["keai", "zako_dejiban", "haqi"],
+		skills: ["keai", "zako_dejiban", "haqi", "wodaoyaokankan"],
 	},
 	lianyu: {
 		sex: "male",
@@ -90,7 +92,7 @@ export const character = {
 		sex: "none",
 		group: "feisheng",
 		hp: 4,
-		skills: ["Restrict", "Permissions", "Root"],
+		skills: ["Restrict", "Permissions", "Root", "Database"],
 	},
 	yunjian: {
 		sex: "male",
@@ -172,7 +174,21 @@ export const character = {
 		hp: 4,
 		maxHp: 5,
 		isZhugong: true,
-		skills: ["shujugongxiang", "bug", "lianxieguankong"],
+		skills: ["shujugongxiang", "bug", "lianxieguankong", "qishizhengjing"],
+	},
+	kongmeng: {
+		sex: "female",
+		group: "zako",
+		hp: 12,
+		isZhugong: true,
+		skills: ["zako_zhiwang", "caibushizayumaoniang", "zayu", "zako_dejiban"],
+	},
+	xiaoxiao: {
+		sex: "male",
+		group: "aoye",
+		hp: 4,
+		isZhugong: true,
+		skills: ["daka", "yeyou", "yexing"],
 	},
 };
 
