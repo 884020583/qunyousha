@@ -28,6 +28,8 @@ export const character = {
 	yuchuanluo: "羽川洛",
 	kongmeng: "空梦",
 	xiaoxiao: "宵宵",
+	sb_dajiejie: "谋大姐姐",
+	sb_dajiejie_prefix: "谋",
 };
 
 export const characterSkill = {
@@ -106,7 +108,7 @@ export const characterSkill = {
 	feitiandazhou: "飞天大肘",
 	feitiandazhou_info: "出牌阶段，若你的体力大于1，你可以失去2体力，令你本回合造成伤害时伤害+1，且令其随机失去装备区的1张牌，此技能不会令你的体力下降到1以下",
 	lurenwangdefanying: "路人王的反应",
-	lurenwangdefanying_info: "锁定技 当你受到伤害后，防止你下一次受到伤害。你的回合开始时，若你的体力不足x/2，将体力回复至x/2+1（x为你的体力上限，向下取整）",
+	lurenwangdefanying_info: "锁定技 当你受到伤害时，有30%几率防止之，若本次未触发，防止你下一次受到伤害。你的回合开始时，若你的体力不足x/2，将体力回复至x/2+1（x为你的体力上限，向下取整）",
 	chudifantan: "触底反弹",
 	chudifantan_info: "锁定技 你的体力为1时，你使用的【杀】无法被响应且伤害+1，且当你使用【杀】令其他角色进入濒死状态时，你回复所有体力，你获得该角色的所有手牌",
 	jiuchengsanwujin: "玖橙三无尽",
@@ -120,7 +122,7 @@ export const characterSkill = {
 	jiuzhuandacheng: "玖转大橙",
 	jiuzhuandacheng_info: "锁定技 你可以将你受到的伤害转移到角色橙子上。每当橙子造成2伤害，你获得1【父】标记。每当橙子回复2体力，你获得1【母】标记",
 	aidechuanbo: "爱的传播",
-	aidechuanbo_info: "回合开始时，你可以令一名其他角色获得【<span style=\"color: #FFC0CB;\">❤</span>】标记，你在之后受到的第一次伤害将转移给该角色。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色摸牌时，你摸1张牌。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色的回合结束时，你与其各回复1体力。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色进入濒死状态时，你可以弃置x张手牌将其体力回复至x（x为你的体力上限）",
+	aidechuanbo_info: "回合开始时，你可以令一名其他角色获得【<span style=\"color: #FFC0CB;\">❤</span>】标记，你每轮受到的第一次伤害可以转移给该角色，伤害固定为1。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色摸牌时，你摸1张牌。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色的回合结束时，你与其各回复1体力。当持有【<span style=\"color: #FFC0CB;\">❤</span>】标记的角色进入濒死状态时，你可以弃置x张手牌将其体力回复至x（x为你的体力上限）",
 	aishen: "爱神",
 	aishen_info: "锁定技 你的手牌上限始终为2x（x为你的体力上限）。你使用锦囊牌不受距离限制。你无法成为【乐不思蜀】的目标。当你使用的锦囊牌仅有1个目标时，你的体力上限+1，最多以此法获得7体力上限。当你失去装备区的牌或你成为锦囊牌的目标时，你回复1体力",
 	fenseyaojing: "粉色妖精",
@@ -175,5 +177,13 @@ export const characterSkill = {
 	yeyou_info: "你使用锦囊牌没有距离限制，且根据牌名有不同的额外效果：<br>【乐不思蜀】、【兵粮寸断】：你摸1张牌然后将1张牌放回牌堆顶<br>【顺手牵羊】、【过河拆桥】：此牌会使用两次<br>【火攻】、【万箭齐发】、【南蛮入侵】：此牌的伤害值+1<br>【桃园结义】：你回复1体力<br>【铁索连环】：可额外指定1个目标<br>【无中生有】：你摸1张牌<br>【无懈可击】：你获得1张花色和点数与此牌相同的【瞒天过海】",
 	yexing: "夜行",
 	yexing_info: "锁定技 你不受属性伤害。因你的伤害进入濒死状态的角色在本回合内无法使用【桃】",
+	yuanzexingwenti: "原则性问题",
+	yuanzexingwenti_info: "当你进入濒死状态时，你弃置所有手牌，回复x体力（x为以此法弃置的牌数），并失去此技能。<br>当你的体力降低到一定程度后，你获得不同的效果：<br>60：你使用的【杀】可以额外选择1个目标<br>45：你使用【杀】造成伤害时，随机弃置其1张手牌<br>30：你使用的【杀】可以再额外选择1个目标。你使用【杀】无距离限制<br>10：你使用【杀】无次数限制",
+	wojiushiyuanze: "我就是原则",
+	wojiushiyuanze_info: "限定技 出牌阶段，若你的体力值大于35，你可以失去x/2体力（x为你当前体力值，向下取整），选择任意名其他角色，令其获得【白板】，并于本轮结束时恢复",
+	zhanli: "占理",
+	zhanli_info: "锁定技 你每次受到伤害的伤害值不超过10。当你受到伤害时，你摸x张牌（x为本次伤害的伤害值）。当你造成伤害时，你回复y体力（y为本次伤害的伤害值）。你可以将武器牌视为【杀】，防具牌视为【闪】使用或打出",
+	huanji: "缓疾",
+	huanji_info: "锁定技 当你的体力首次不大于100时，你获得效果：你失去20体力上限；你受到伤害的伤害值*2；废除你的武器栏和防具栏",
 
 };

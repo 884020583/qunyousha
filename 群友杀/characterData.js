@@ -57,6 +57,7 @@ export const intro = {
 	yuchuanluo: "羽川川川川川川川洛<br>Raaaaaaaaaaku！！！",
 	kongmeng: "你这只弱受杂鱼猫娘！",
 	xiaoxiao: "群里的经典夜猫子的说",
+	sb_dajiejie: "大姐姐plus pro max！海量的体力，你扣不动的存在！（乖乖挨扣吧）",
 };
 
 export const character = {
@@ -189,6 +190,12 @@ export const character = {
 		hp: 4,
 		isZhugong: true,
 		skills: ["daka", "yeyou", "yexing"],
+	},
+	sb_dajiejie: {
+		sex: "female",
+		group: "waijing",
+		hp: 120,
+		skills: ["yuanzexingwenti", "wojiushiyuanze", "zhanli", "huanji"],
 	},
 };
 

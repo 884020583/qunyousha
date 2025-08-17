@@ -445,7 +445,7 @@ export const skill = {
 		usable: Infinity,
 		selectTarget: 1,
 		filterTarget: function (card, player, target) {
-			return target != player && !target.hasMark("狐封");
+			return target != player && !target.hasMark("hufeng");
 		},
 		content: function () {
 			player.loseHp();
@@ -870,7 +870,7 @@ export const skill = {
 				},
 				skillAnimation: true,
 				animationColor: "orange",
-				juexingjie: true,
+				juexingji: true,
 				unique: true,
 				forced: true,
 				filter: function(event, player) {
@@ -1027,18 +1027,17 @@ export const skill = {
 	gousi: {
 		enable: "phaseUse",
 		usable: 1,
-		filter: function(event, player) {
-			return player.getCards("h").length > 0;
-		},
 		async content(event, trigger, player) {
-			const targets = [];
-			for (const current of game.players) {
-				const bool = await current.chooseBool("h", true)
-					.set("prompt", "你可以随机弃置1张手牌以参加" + get.translation(player.name) + "的议事")
-					.forResultBool();
-				if (bool) targets.push(current);
-			}
-			targets.forEach(current => { current.randomDiscard("h", 1); });
+			const targets = await Promise.all(
+				game.players.map(async current => {
+					const bool = await current.chooseBool("h", true)
+						.set("prompt", "你可以随机弃置1张手牌以参加" + get.translation(player.name) + "的议事")
+						.forResultBool();
+					return bool ? current : null;
+				})
+			).then(results => results.filter(Boolean));
+
+			await Promise.all(targets.map(current => current.randomDiscard("h", 1)));
 
 			await player.chooseToDebate(targets).set("callback", async event => {
 				const { debateResult: result } = event;
@@ -2270,7 +2269,7 @@ export const skill = {
 				},
 				round: 1,
 				prompt2: function (event, player) { 
-					return "是否将此" + event.num + "伤害转移给" + get.translation(player.storage.aidechuanbo_mark);
+					return "是否将此伤害转移给" + get.translation(player.storage.aidechuanbo_mark) + "并将伤害值调整为1？";
 				},
 				filter: function (event, player) {
 					if (player.storage.aidechuanbo_mark == null) return false;
@@ -2278,8 +2277,8 @@ export const skill = {
 				},
 				content: function () {
 					var target = player.storage.aidechuanbo_mark;
+					trigger.num = 1;
 					trigger.player = target;
-					this.trigger.num = 1;
 				},
 			},
 		},
@@ -3556,6 +3555,237 @@ export const skill = {
 					cardSavable: function (card, player) {
 						if (card.name == "tao") return false;
 					},
+				},
+			},
+		},
+	},
+	yuanzexingwenti: {
+		init: function (player) { 
+			player.storage.yuanzexingwenti_target = false;
+			player.storage.yuanzexingwenti_discard = false;
+			player.storage.yuanzexingwenti_target_and_range = false;
+			player.storage.yuanzexingwenti_usable = false;
+		},
+		mark: true,
+		marktext: "原",
+		intro: {
+			name: "原则性问题",
+			nocount: true,
+			content: function (storage, player) {
+				if (!player.storage.yuanzexingwenti_target && !player.storage.yuanzexingwenti_discard &&
+					!player.storage.yuanzexingwenti_target_and_range && !player.storage.yuanzexingwenti_usable) return "一切正常";
+				
+				var str = "";
+				if (player.storage.yuanzexingwenti_target) str += "使用的【杀】可以额外选择1个目标<br>";
+				if (player.storage.yuanzexingwenti_discard) str += "使用【杀】造成伤害时，随机弃置其1张手牌<br>";
+				if (player.storage.yuanzexingwenti_target_and_range) str += "使用的【杀】可以再额外选择1个目标<br>使用【杀】无距离限制<br>";
+				if (player.storage.yuanzexingwenti_usable) str += "使用【杀】无次数限制";
+				return str;
+			},
+		},
+		group: ["yuanzexingwenti_dying", "yuanzexingwenti_add", "yuanzexingwenti_target", "yuanzexingwenti_discard", "yuanzexingwenti_target_and_range", "yuanzexingwenti_usable"],
+		subSkill: {
+			dying: {
+				trigger: {
+					player: "dying",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return player.countCards("h") > 0;
+				},
+				content: function () {
+					player.discard(player.getCards("h"));
+					player.recover(player.countCards("h"));
+					player.removeSkill("yuanzexingwenti");
+				},
+			},
+			add: {
+				trigger: {
+					player: "changeHpAfter",
+				},
+				forced: true,
+				popup: false,
+				filter: function (event, player) {
+					return !player.storage.yuanzexingwenti_target || !player.storage.yuanzexingwenti_discard ||
+						!player.storage.yuanzexingwenti_target_and_range || !player.storage.yuanzexingwenti_usable;
+				},
+				content: function () {
+					const hp = player.hp;
+					if (hp <= 10) {
+						player.logSkill("yuanzexingwenti");
+						player.storage.yuanzexingwenti_usable = true;
+					}
+					if (hp <= 30) {
+						player.logSkill("yuanzexingwenti");
+						player.storage.yuanzexingwenti_target_and_range = true;
+					}
+					if (hp <= 45) {
+						player.logSkill("yuanzexingwenti");
+						player.storage.yuanzexingwenti_discard = true;
+					}
+					if (hp <= 60) {
+						player.logSkill("yuanzexingwenti");
+						player.storage.yuanzexingwenti_target = true;
+					}
+				},
+			},
+			target: {
+				mod: {
+					selectTarget: function (card, player, range) { 
+						if (player.storage.yuanzexingwenti_target && card.name == "sha") {
+							range[1]++;
+						}
+					},
+				},
+			},
+			discard: {
+				trigger: {
+					source: "damageEnd",
+				},
+				forced: true,
+				filter: function (event, player) {
+					if (!player.storage.yuanzexingwenti_target) return false;
+					return event.card && event.card.name == "sha" && event.num > 0;
+				},
+				content: function () {
+					trigger.player.randomDiscard("h", 1);
+				},
+			},
+			target_and_range: {
+				mod: {
+					targetInRange: function (card, player, target) {
+						if (player.storage.yuanzexingwenti_target_and_range) return true;
+					},
+					selectTarget: function (card, player, range) {
+						if (player.storage.yuanzexingwenti_target_and_range && card.name == "sha") range[1]++;
+					},
+				},
+			},
+			usable: {
+				mod: {
+					cardUsable: function (card, player, num) {
+						if (player.storage.yuanzexingwenti_usable && card.name == "sha") return Infinity;
+					}
+				},
+			},
+		},
+	},
+	wojiushiyuanze: {
+		enable: "phaseUse",
+		limited: true,
+		skillAnimation: true,
+		animationColor: "wood",
+		unique: true,
+		selectTarget: [0, Infinity],
+		multitarget: true,
+		multiline: true,
+		filterTarget: function (card, player, target) {
+			return target != player;
+		},
+		filter: function (event, player) {
+			return player.hp >= 35;
+		},
+		content: function () { 
+			player.awakenSkill(event.name);
+			const num = Math.floor(player.hp / 2);
+			player.loseHp(num);
+			event.targets.forEach(target => target.addTempSkill("baiban", "roundEnd"));
+		},
+	},
+	zhanli: {
+		locked: true,
+		group: ["zhanli_overflow", "zhanli_draw", "zhanli_recover", "zhanli_viewAs"],
+		subSkill: {
+			overflow: {
+				trigger: {
+					player: "damageBegin4",
+				},
+				forced: true,
+				locked: true,
+				lastDo: true,
+				filter: function (event, player) {
+					return event.num > 10;
+				},
+				content: function () {
+					trigger.num = 10;
+				},
+			},
+			draw: {
+				trigger: {
+					player: "damageAfter",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				content: function () {
+					player.draw(trigger.num);
+				},
+			},
+			recover: {
+				trigger: {
+					source: "damageAfter",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				content: function () {
+					player.recover(trigger.num);
+				},
+			},
+			viewAs: {
+				enable: ["chooseToUse", "chooseToRespond"],
+				locked: true,
+				filterCard: function (card, player) {
+					return ["equip1", "equip2"].includes(get.subtype(card));
+				},
+				position: "hes",
+				viewAs: function (cards) {
+					const subtype = get.subtype(cards[0]);
+					return subtype == "equip1" ? { name: "sha" } : { name: "shan" };
+				},
+				filter: function (event, player) {
+					return player.countCards("hes", function (card) {
+						return ["equip1", "equip2"].includes(get.subtype(card));
+					}) > 0;
+				},
+			},
+		},
+	},
+	huanji: {
+		init: function (player) {
+			player.storage.huanji = false;
+		},
+		trigger: {
+			player: "changeHpAfter",
+		},
+		forced: true,
+		locked: true,
+		filter: function (event, player) { 
+			return !player.storage.huanji && player.hp <= 100;
+		},
+		content: function () {
+			player.storage.huanji = true;
+			player.loseMaxHp(20);
+			player.addSkill("huanji_damage");
+			player.disableEquip([1, 2]);
+		},
+		subSkill: {
+			damage: {
+				trigger: {
+					player: "damageBegin4",
+				},
+				forced: true,
+				locked: true,
+				charlotte: true,
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				content: function () {
+					trigger.num *= 2;
 				},
 			},
 		},
