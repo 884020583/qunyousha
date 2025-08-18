@@ -1,5 +1,6 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
 import { intro } from './characterData.js';
+import { character } from './translation.js';
 export const skill = {
 	keai: {
 		trigger: {
@@ -163,27 +164,18 @@ export const skill = {
 		},
 	},
 	test1: {
-		init: function (player) {
-			player.storage.test1_sha = false;
-		},
-		trigger: {
-			player: "shaAfter",
-		},
-		forced: true,
-		popup: false,
-		content: function () {
-			if (!player.storage.test1_sha) {
-				const card = trigger.card;
-				player.logSkill("test1");
-				player.useCard(card, trigger.targets, true);
-				player.storage.test1_sha = true;
-			} else {
-				player.storage.test1_sha = false;
-			}
+		enable: "phaseUse",
+		content: function (event, trigger, player) {
+			const card = game.createCard("woyaokanninvzhuang", "spade", 9);
+			player.gain(card, "draw");
 		},
 	},
 	test2: {
-		
+		enable: "phaseUse",
+		content: function (event, trigger, player) {
+			const card = game.createCard("kaikou", "heart", 6);
+			player.gain(card, "draw");
+		},
 	},
 	mengwu: {
 		group: ["mengwu_subskill1", "mengwu_subskill2_sha", "mengwu_subskill2_trick"],
@@ -786,7 +778,7 @@ export const skill = {
 	},
 	Database: {
 		trigger: {
-			global: "discardAfter",
+			global: "discardEnd",
 		},
 		forced: true,
 		locked: true,
@@ -2425,7 +2417,7 @@ export const skill = {
 				},
 				usable: Infinity,
 				filter: function (event, player) {
-					return event.player != player && event.player.skills.includes(event.skill);
+					return event.player != player && !["_recasting", "muniu_skill", "muniu_skill7"].includes(event.skill);
 				},
 				prompt2: function (event, player) {
 					return "你可以获得" + get.translation(event.player) +"的1张手牌";
@@ -3788,6 +3780,285 @@ export const skill = {
 					trigger.num *= 2;
 				},
 			},
+		},
+	},
+	shiyi: {
+		trigger: {
+			global: "discardEnd",
+		},
+		prompt2: function (event, player) { 
+			return "是否获得来自" + get.translation(event.player) + "的" + get.translation(event.cards) + "？";
+		},
+		filter: function (event, player) {
+			return _status.currentPhase != player && event.cards && event.cards.length > 0;
+		},
+		content: function () { 
+			const cards = trigger.cards;
+			player.gain(cards, "gain2");
+		},
+	},
+	xiewei: {
+		enable: "phaseUse",
+		usable: 1,
+		filter: function (event, player) {
+			return player.countCards("he") > 0;
+		},
+		selectTarget: 1,
+		filterTarget: function (card, player, target) {
+			return target != player;
+		},
+		async content (event, trigger, player) {
+			await player.chooseToDiscard("he", 1, true);
+			const num = Math.max(player.hp, player.getDamagedHp(true));
+			const target = event.targets[0];
+			const drawCards = await target.draw(num).forResult();
+
+			var suits = [];
+			for (let i = 0; i < drawCards.length; i++) {
+				const card = drawCards[i];
+				if (!suits.includes(get.suit(card))) suits.push(get.suit(card));
+			}
+			const handCards = target.getCards("h");
+			var discardCards = [];
+			for (let i = 0; i < handCards.length; i++) {
+				const card = handCards[i];
+				if (!suits.includes(get.suit(card))) discardCards.push(card);
+			}
+			if (discardCards.length > 0) await target.discard(discardCards);
+
+			if (target.countCards("h") > target.hp) target.damage();
+		},
+	},
+	polao: {
+		trigger: {
+			player: "loseEnd",
+		},
+		forced: true,
+		locked: true,
+		filter: function (event, player) { 
+			return player.countCards("h") < player.hp;
+		},
+		content: function () { 
+			player.drawTo(player.hp);
+		},
+		mod: {
+			targetEnabled: function (card, player, target) {
+				if (get.type(card) == "delay") return false;
+			},
+			maxHandcard: function (player, num) {
+				return player.maxHp * 4;
+			},
+		},
+	},
+	xiami: {
+		init: function (player) {
+			player.storage.xiami_count = 2;
+		},
+		trigger: {
+			global: "phaseBegin",
+		},
+		prompt2: function (event, player) { 
+			return "是否弃置一张牌，对" + get.translation(event.player) + "使用一张无花色和点数的【杀】？";
+		},
+		filter: function (event, player) {
+			return player.storage.xiami_count == 2 && event.player != player && player.countCards("he") > 0;
+		},
+		async content (event, trigger, player) { 
+			const result = await player.chooseToDiscard("he", 1, true).set("ai", function (card) {
+				return 5 - get.value(card);
+			}).forResult();
+
+			if (result.bool) {
+				player.storage.xiami_count = 0;
+				player.discard(event.cards);
+				const card = { name: "sha" };
+				player.useCard(card, trigger.player);
+			}
+		},
+		group: ["xiami_count", "xiami_damage", "xiami_draw"],
+		subSkill: {
+			count: {
+				trigger: {
+					global: "phaseBegin",
+				},
+				forced: true,
+				locked: true,
+				charlotte: true,
+				lastDo: true,
+				popup: false,
+				filter: function (event, player) {
+					return player.storage.xiami_count < 2;
+				},
+				content: function () {
+					player.storage.xiami_count++;
+				}
+			},
+			damage: {
+				trigger: {
+					source: "damageEnd",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					return event.num > 0 && _status.currentPhase != player;
+				},
+				content: function () {
+					const target = trigger.player;
+					target.discard(target.getCards("e").randomGet());
+					target.turnOver();
+					target.draw(2);
+				}
+			},
+			draw: {
+				trigger: {
+					global: "phaseEnd",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					const now = _status.currentPhase;
+					return now != player && now.getHistory("damage", evt => evt.source == player).length <= 0;
+				},
+				content: function () {
+					player.draw();
+				}
+			},
+		},
+	},
+	qianshui: {
+		init: function (player) {
+			player.storage.qianshui = true;
+		},
+		zhuanhuanji: true,
+		mark: true,
+		marktext: "☯",
+		intro: {
+			name: "潜水",
+			content: function (storage, player) {
+				var mode = player.storage.qianshui ? "阳" : "阴";
+				return "下次使用为 " + mode + " 效果";
+			},
+		},
+		group: ["qianshui_yang", "qianshui_yin"],
+		subSkill: {
+			yang: {
+				enable: "phaseUse",
+				usable: 1,
+				filter: function (event, player) {
+					return player.storage.qianshui && player.countCards("h") > 0 && game.hasPlayer(function (current) {
+						return current != player && current.countCards("hej") > 0;
+					});
+				},
+				async content (event, trigger, player) { 
+					const discard = await player.chooseToDiscard("h", [1, Infinity], true).set("ai", function (card) {
+						return 5 - get.value(card);
+					}).forResult();
+
+					if (discard.bool) {
+						const targets = await player.chooseTarget("选择一名其他角色，观看其手牌", 1, true, function (card, player, target) {
+							return target != player && target.countCards("hej") > 0;
+						}).set("ai", function (target) {
+							return -get.attitude(player, target);
+						}).forResultTargets();
+						const target = targets[0];
+						const h = target.getCards("h");
+						const e = target.getCards("e");
+						const j = target.getCards("j");
+						const gain = await player.chooseButton(["你可以从中获得至多" + discard.cards.length + "张牌", [h, "card"], [e, "card"], [j, "card"]],
+							[1, discard.cards.length], false).forResult();
+						if (gain.bool) player.gain(gain.links, "gainAuto");
+					}
+					player.changeZhuanhuanji("qianshui");
+				},
+			},
+			yin: {
+				trigger: {
+					global: "roundEnd",
+				},
+				prompt2: function (event, player) {
+					const num = Math.min(3, Math.max(1, Math.floor(player.hp / 4)));
+					return "你可以弃置2张手牌对一名其他角色造成" + num + "伤害";
+				},
+				filter: function (event, player) {
+					return !player.storage.qianshui && player.countCards("h") >= 2;
+				},
+				async content (event, trigger, player) { 
+					const num = Math.min(3, Math.max(1, Math.floor(player.hp / 4)));
+					const discard = await player.chooseToDiscard("h", 2, false).set("ai", function (card) {
+						return 5 - get.value(card);
+					}).forResult();
+
+					if (discard.bool) {
+						const targets = await player.chooseTarget(1, true, function (card, player, target) {
+							return target != player;
+						}).set("ai", function (target) {
+							return -get.attitude(player, target);
+						}).forResultTargets();
+						targets[0].damage(num);
+					}
+					player.changeZhuanhuanji("qianshui");
+				},
+			},
+		},
+	},
+	kapai: {
+		trigger: {
+			global: "useSkillAfter",
+		},
+		forced: true,
+		filter: function (event, trigger, player) {
+			return !["_recasting", "muniu_skill", "muniu_skill7"].includes(event.skill);
+		},
+		async content (event, trigger, player) {
+			player.draw();
+
+			if (player.maxHp < 12) {
+				const num = Math.min(6, Math.max(2, player.hp - 1));
+				const result = await player.chooseToDiscard("你可以弃置" + num + "张牌，令你的体力和体力上限+1", "he", num, false).set("ai", function (card) {
+					return 7 - get.value(card);
+				}).forResult();
+				if (result.bool) {
+					player.gainMaxHp();
+					player.recover();
+				}
+			}
+		},
+		group: ["kapai_maxHp"],
+		subSkill: {
+			maxHp: {
+				trigger: {
+					player: "gainMaxHpBegin",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					return player.maxHp + event.num > 12; 
+				},
+				content: function () {
+					if (player.maxHp == 12) trigger.cancel();
+					else trigger.num = 12 - player.maxHp;
+				},
+			},
+		},
+	},
+	bendan: {
+		trigger: {
+			player: "damageBegin2",
+		},
+		forced: true,
+		locked: true,
+		filter: function (event, player) {
+			return event.num > 0 && event.card && player.maxHp >= 2;
+		},
+		async content (event, trigger, player) {
+			const result = await player.judge(function (card) {
+				if (get.number(card) >= 11) return 1.5;
+				return -1.5;
+			}).forResult();
+			if (result.bool) {
+				trigger.num = 0;
+				player.draw();
+			}
 		},
 	},
 };

@@ -58,6 +58,8 @@ export const intro = {
 	kongmeng: "你这只弱受杂鱼猫娘！",
 	xiaoxiao: "群里的经典夜猫子的说",
 	sb_dajiejie: "大姐姐plus pro max！海量的体力，你扣不动的存在！（乖乖挨扣吧）",
+	zuolaobai: "叫我大牢白",
+	jinbihai: "一枚爱潜水的虾米",
 };
 
 export const character = {
@@ -196,6 +198,20 @@ export const character = {
 		group: "waijing",
 		hp: 120,
 		skills: ["yuanzexingwenti", "wojiushiyuanze", "zhanli", "huanji"],
+	},
+	zuolaobai: {
+		sex: "male",
+		group: "feisheng",
+		hp: 3,
+		maxHp: 4,
+		skills: ["shiyi", "xiewei", "polao"],
+	},
+	jinbihai: {
+		sex: "male",
+		group: "waijing",
+		hp: 4,
+		maxHp: 5,
+		skills: ["xiami", "qianshui", "kapai", "bendan"],
 	},
 };
 
