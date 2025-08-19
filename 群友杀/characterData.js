@@ -60,6 +60,7 @@ export const intro = {
 	sb_dajiejie: "大姐姐plus pro max！海量的体力，你扣不动的存在！（乖乖挨扣吧）",
 	zuolaobai: "叫我大牢白",
 	jinbihai: "一枚爱潜水的虾米",
+	sb_zuolaobai: "就是看不惯坐牢怎么了？咱牢白坐牢了大半辈子还不能享受享受吗（bushi）",
 };
 
 export const character = {
@@ -212,6 +213,13 @@ export const character = {
 		hp: 4,
 		maxHp: 5,
 		skills: ["xiami", "qianshui", "kapai", "bendan"],
+	},
+	sb_zuolaobai: {
+		sex: "male",
+		group: "feisheng",
+		hp: 4,
+		maxHp: 5,
+		skills: ["xueyan", "sb_shiyi", "qiutian", "yili"],
 	},
 };
 

@@ -36,6 +36,8 @@ export const character = {
 	sb_dajiejie_prefix: "谋",
 	zuolaobai: "坐牢白",
 	jinbihai: "金碧海",
+	sb_zuolaobai: "谋坐牢白",
+	sb_zuolaobai_prefix: "谋",
 };
 
 export const characterSkill = {
@@ -205,4 +207,12 @@ export const characterSkill = {
 	kapai_info: "当场上有角色使用主动技时，你摸1张牌，然后你可以弃置x-1张牌（x为你的体力值，最低为2，最多为6），令你的体力和体力上限+1，你的体力上限最多为12",
 	bendan: "笨蛋",
 	bendan_info: "锁定技 你受到来自牌的伤害时，若你的体力上限大于2，进行一次判定：若点数为11~13，防止此伤害并摸1张牌",
+	xueyan: "学厌",
+	xueyan_info: "锁定技 你跳过弃牌阶段。当你将翻面时，取消之",
+	sb_shiyi: "拾遗",
+	sb_shiyi_info: "其他角色于弃牌阶段弃牌后，你可选择一项：1.你失去1【遗】标记，获得这些牌；2.你摸2张牌，获得1【遗】标记",
+	qiutian: "囚天",
+	qiutian_info: "你可以将装备牌视为【火杀】使用或打出，且根据子类型有额外效果：<br>武器牌：此牌的伤害+1；<br>防具牌：此牌需要两张【闪】才能抵消；<br>坐骑牌：此牌命中后不造成伤害，改为你弃置其区域里的1张牌，你获得1【遗】标记<br>宝物牌：你摸2张牌",
+	yili: "遗礼",
+	yili_info: "当你受到伤害后，你可以失去1【遗】标记，你回复1体力并摸2张牌。当你进入濒死状态时，你可以失去4【遗】标记将体力回复至1",
 };

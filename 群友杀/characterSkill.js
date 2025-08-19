@@ -377,8 +377,7 @@ export const skill = {
 					});
 					if (last[0]) last[0].removeMark("nihenbangle_subskill5_mark");
 					var target = trigger.targets[0];
-					if (!target.hasMark("nihenbangle_subskill5_mark")) target.setMark("nihenbangle_subskill5_mark", 1, false);
-					game.log(lib.translate[target.name] + "获得了【nihenbangle】标记");
+					if (!target.hasMark("nihenbangle_subskill5_mark")) target.setMark("nihenbangle_subskill5_mark", 1, true);
 				},
 				marktext: "棒",
 				intro: {
@@ -4059,6 +4058,207 @@ export const skill = {
 				trigger.num = 0;
 				player.draw();
 			}
+		},
+	},
+	xueyan: {
+		locked: true,
+		group: ["xueyan_skip", "xueyan_turnOver"],
+		subSkill: {
+			skip: {
+				trigger: {
+					player: "phaseBefore",
+				},
+				forced: true,
+				locked: true,
+				popup: false,
+				content: function () {
+					player.skip("phaseDiscard");
+				},
+			},
+			turnOver: {
+				trigger: {
+					player: "turnOverBefore",
+				},
+				forced: true,
+				locked: true,
+				content: function () {
+					trigger.cancel();
+				},
+			},
+		},
+	},
+	sb_shiyi: {
+		trigger: {
+			global: "discardAfter",
+		},
+		filter: function (event, player) { 
+			return event.player != player && event.player.getHistory("lose", function (evt) {
+				return evt.type == "discard" && evt.getParent("phaseDiscard") == _status.event.getParent("phaseDiscard");
+			}).length > 0;
+		},
+		async content (event, trigger, player) { 
+			var list = ["你摸2张牌，获得1【遗】标记", "你失去1【遗】标记，获得这些牌",];
+			if (!player.hasMark("sb_shiyi")) list = ["你摸2张牌，获得1【遗】标记"];
+			const result = await player.chooseControl(list, true).set("ai", function () {
+				if (!player.hasMark("sb_shiyi")) return list[0];
+				return Math.random() < 0.5 ? list[0] : list[1];
+			}).forResult();
+			if (result.control == list[0]) {
+				player.draw(2);
+				player.addMark("sb_shiyi", 1, true);
+			} else {
+				player.removeMark("sb_shiyi", 1, true);
+				player.gain(trigger.cards, "gain2");
+			}
+		},
+		marktext: "遗",
+		intro: {
+			name: "拾遗",
+			content: "当前有#个【遗】标记",
+		},
+	},
+	qiutian: {
+		init: function(player) {
+			player.storage.qiutian_card = {};
+		},
+		enable: ["chooseToUse", "chooseToRespond"],
+		viewAs: {
+			name: "sha",
+			nature: "fire",
+		},
+		filterCard: function(card, player) {
+			return get.type(card) == "equip";
+		},
+		position: "he",
+		filter: function(event, player) {
+			return player.countCards("he", { type: "equip" }) > 0;
+		},
+		async onuse (result, player) {
+			const card = result.cards[0];
+			player.storage.qiutian_card = card;
+		},
+		group: ["qiutian_equip1", "qiutian_equip2", "qiutian_equip34", "qiutian_equip5"],
+		subSkill: {
+			equip1: {
+				trigger: {
+					player: "shaBegin",
+				},
+				forced: true,
+				locked: true,
+				popup: false,
+				filter: function (event, player) {
+					const card = player.storage.qiutian_card;
+					const subtype = get.subtype(card);
+					return event.card.name == "sha" && get.nature(event.card) == "fire" && subtype == "equip1" &&
+						player.getHistory("useSkill", function (evt) {
+							return evt.skill == "qiutian" && _status.event.getParent("useSkill") == evt;
+						});
+				},
+				content: function () {
+					trigger.baseDamage++;
+				},
+			},
+			equip2: {
+				trigger: {
+					player: "useCardToPlayered",
+				},
+				forced: true,
+				locked: true,
+				popup: false,
+				filter: function (event, player) {
+					const card = player.storage.qiutian_card;
+					const subtype = get.subtype(card);
+					return event.card.name == "sha" && get.nature(event.card) == "fire" && subtype == "equip2" && 
+						player.getHistory("useSkill", function (evt) {
+							return evt.skill == "qiutian" && _status.event.getParent("useSkill") == evt;
+						});
+				},
+				content: function () { 
+					const id = trigger.target.playerid;
+					const map = trigger.getParent().customArgs;
+					if (!map[id]) {
+						map[id] = {};
+					}
+					if (typeof map[id].shanRequired == "number") {
+						map[id].shanRequired++;
+					} else {
+						map[id].shanRequired = 2;
+					}
+				},
+			},
+			equip34: {
+				trigger: {
+					source: "damageBefore",
+				},
+				forced: true,
+				locked: true,
+				popup: false,
+				filter: function (event, player) {
+					const card = player.storage.qiutian_card;
+					const subtype = get.subtype(card);
+					return event.card.name == "sha" && get.nature(event.card) == "fire" && ["equip3", "equip4"].includes(subtype) &&
+						event.num > 0 && player.getHistory("useSkill", function (evt) {
+							return evt.skill == "qiutian" && _status.event.getParent("useSkill") == evt;
+						});
+				},
+				async content(event, trigger, player) {
+					trigger.cancel();
+					const target = trigger.player;
+					if (target.countCards("hej") > 0) await player.discardPlayerCard(target, "hej", 1, true);
+					player.addMark("sb_shiyi", 1, true);
+				},
+			},
+			equip5: {
+				trigger: {
+					player: "shaBegin",
+				},
+				forced: true,
+				locked: true,
+				popup: false,
+				filter: function (event, player) {
+					const card = player.storage.qiutian_card;
+					const subtype = get.subtype(card);
+					return event.card.name == "sha" && get.nature(event.card) == "fire" && subtype == "equip5" &&
+						player.getHistory("useSkill", function (evt) {
+							return evt.skill == "qiutian" && _status.event.getParent("useSkill") == evt;
+						});
+				},
+				content: function () {
+					player.draw(2);
+				},
+			},
+		},
+	},
+	yili: {
+		group: ["yili_damage", "yili_dying"],
+		subSkill: { 
+			damage: {
+				trigger: {
+					player: "damageEnd",
+				},
+				prompt2: "你可以失去1【遗】标记，你回复1体力并摸2张牌",
+				filter: function (event, player) {
+					return event.num > 0 && player.hasMark("sb_shiyi");
+				},
+				content: function () { 
+					player.removeMark("sb_shiyi", 1, true);
+					player.recover();
+					player.draw(2);
+				},
+			},
+			dying: {
+				trigger: {
+					player: "dying",
+				},
+				prompt2: "你可以失去4【遗】标记将体力回复至1",
+				filter: function (event, player) {
+					return player.countMark("sb_shiyi") >= 4;
+				},
+				content: function () {
+					player.removeMark("sb_shiyi", 4, true);
+					player.recoverTo(1);
+				},
+			},
 		},
 	},
 };
