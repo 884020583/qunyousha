@@ -61,6 +61,8 @@ export const intro = {
 	zuolaobai: "叫我大牢白",
 	jinbihai: "一枚爱潜水的虾米",
 	sb_zuolaobai: "就是看不惯坐牢怎么了？咱牢白坐牢了大半辈子还不能享受享受吗（bushi）",
+	yuqiu: "一吃爱吃杂鱼の猫猫",
+	sb_yunjian: "闲云一片挂窗边，偶落风前作信笺。<br>写到斜阳沉未竟，空余墨色染茶烟。",
 };
 
 export const character = {
@@ -220,6 +222,19 @@ export const character = {
 		hp: 4,
 		maxHp: 5,
 		skills: ["xueyan", "sb_shiyi", "qiutian", "yili"],
+	},
+	yuqiu: {
+		sex: "female",
+		group: "shigan",
+		hp: 7,
+		skills: ["ranmingbuqudejuejiang", "dumibudingdeduice", "wuweizhongshidekangzheng"],
+	},
+	sb_yunjian: {
+		sex: "male",
+		group: "shigan",
+		hp: 4,
+		isZhugong: true,
+		skills: ["qinxue", "sb_gongmian"],
 	},
 };
 
