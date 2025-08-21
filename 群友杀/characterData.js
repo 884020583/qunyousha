@@ -63,6 +63,7 @@ export const intro = {
 	sb_zuolaobai: "就是看不惯坐牢怎么了？咱牢白坐牢了大半辈子还不能享受享受吗（bushi）",
 	yuqiu: "一吃爱吃杂鱼の猫猫",
 	sb_yunjian: "闲云一片挂窗边，偶落风前作信笺。<br>写到斜阳沉未竟，空余墨色染茶烟。",
+	shen_lvren: "明明厌恶着孤独，却从未离开过深渊的边缘",
 };
 
 export const character = {
@@ -132,7 +133,7 @@ export const character = {
 	chengzi: {
 		sex: "male",
 		group: "feisheng",
-		hp: 8,
+		hp: 9,
 		skills: ["feitiandazhou", "lurenwangdefanying", "chudifantan", "jiuchengsanwujin"],
 	},
 	shijiu: {
@@ -199,7 +200,7 @@ export const character = {
 	sb_dajiejie: {
 		sex: "female",
 		group: "waijing",
-		hp: 120,
+		hp: 100,
 		skills: ["yuanzexingwenti", "wojiushiyuanze", "zhanli", "huanji"],
 	},
 	zuolaobai: {
@@ -235,6 +236,12 @@ export const character = {
 		hp: 4,
 		isZhugong: true,
 		skills: ["qinxue", "sb_gongmian"],
+	},
+	shen_lvren: {
+		sex: "male",
+		group: "shen",
+		hp: 3,
+		skills: ["linyuan", "wangmeng"],
 	},
 };
 

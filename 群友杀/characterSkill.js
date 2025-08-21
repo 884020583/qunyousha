@@ -50,6 +50,7 @@ export const skill = {
 		"_priority": 0,
 	},
 	zako_dejiban: {
+		locked: true,
 		group: ["zako_dejiban_subskill1", "zako_dejiban_subskill2"],
 		subSkill: {
 			"subskill1": {
@@ -57,6 +58,7 @@ export const skill = {
 					player: "recoverBegin",
 				},
 				forced: true,
+				locked: true,
 				filter: function (event, player) {
 					return event.source.hasSkill("zako_dejiban") && (event.source !== player);
 				},
@@ -72,6 +74,7 @@ export const skill = {
 					player: "recoverAfter",
 				},
 				forced: true,
+				locked: true,
 				filter: function (event, player) {
 					return event.card && event.card.name == "tao" && event.source != player 
 						&& !player.isDying() && event.source.hasSkill("zako_dejiban");
@@ -1375,6 +1378,7 @@ export const skill = {
 		},
 	},
 	wumingwangnv: {
+		locked: true,
 		group: ["wumingwangnv_subskill1", "wumingwangnv_subskill2", "wumingwangnv_subskill3"],
 		subSkill: {
 			subskill1: {
@@ -1392,6 +1396,7 @@ export const skill = {
 				},
 			},
 			subskill2: { 
+				locked: true,
 				mod: {
 					targetEnabled: function (card, player, target) {
 						if (["lebu", "bingliang", "tiesuo"].includes(card.name)) {
@@ -1410,14 +1415,13 @@ export const skill = {
 					return event.source && event.source != player;
 				},
 				content: function () { 
-					player.gainPlayerCard(trigger.source, "hej", 1, false).set("ai", function (card) {
-						return get.value(card, player);
-					});
+					player.gainPlayerCard(trigger.source, "hej", 1, false);
 				},
 			},
 		},
 	},
 	yongzhedezeren: {
+		locked: true,
 		group: ["yongzhedezeren_subskill1", "yongzhedezeren_subskill2"],
 		subSkill: {
 			subskill1: {
@@ -1478,6 +1482,7 @@ export const skill = {
 				},
 				forced: true,
 				locked: true,
+				charlotte: true,
 				content: function () {
 					trigger.num = 0;
 				},
@@ -1720,30 +1725,36 @@ export const skill = {
 		},
 	},
 	feitiandazhou: {
-		enable: "phaseUse",
-		filter: function (event, player) {
-			// 体力大于1且能失去2体力但不会降到1以下
-			return player.hp > 1;
+		init: function (player) {
+			player.storage.feitiandazhou_num = 0;
 		},
-		content: function () {
-			// 失去2体力
-			if (player.hp - 2 < 1) player.loseHp(player.hp - 1);
-			else player.loseHp(2);
-			
-			// 添加本回合伤害+1的技能效果
-			player.addTempSkill("feitiandazhou_buff");
-			player.addMark("feitiandazhou_buff", 1, false);
-		},
+		group: ["feitiandazhou_loseHp", "feitiandazhou_damage"],
 		subSkill: {
+			loseHp: { 
+				enable: "phaseUse",
+				filter: function (event, player) {
+					return player.hp > 1;
+				},
+				content: function () {
+					if (player.hp - 3 < 1) player.loseHp(player.hp - 1);
+					else player.loseHp(3);
+
+					player.addTempSkill("feitiandazhou_buff");
+					player.addMark("feitiandazhou_buff", 1, false);
+				},
+			},
 			buff: {
 				trigger: { 
-					source: "damageBegin" 
+					source: "damageBegin",
 				},
 				forced: true,
 				locked: true,
 				popup: false,
 				onremove: function (player) {
 					player.removeMark("feitiandazhou_buff", player.countMark("feitiandazhou_buff"), false);
+				},
+				filter: function (event, player) {
+					return event.card && event.card.name == "sha" && player.hasMark("feitiandazhou_buff");
 				},
 				content: function () {
 					// 伤害+1
@@ -1753,18 +1764,41 @@ export const skill = {
 					if (trigger.player.countCards("e") > 0) {
 						const cards = trigger.player.getCards("e");
 						const card = cards.randomGet();
-						if (card) {
-							trigger.player.discard(card);
-						}
+						if (card) trigger.player.discard(card);
 					}
 				},
 				marktext: "肘",
 				intro: {
 					name: "飞天大肘",
-					content: "本回合内造成的伤害+#，且目标随机失去装备区的1张牌",
+					content: "本回合内使用【杀】造成的伤害+#，且目标随机失去装备区的1张牌",
 				},
-			}
-		}
+			},
+			damage: {
+				trigger: {
+					source: "damageEnd",
+				},
+				forced: true,
+				filter: function (event, player) { 
+					return event.num > 0;
+				},
+				content: function () { 
+					player.recover();
+					player.storage.feitiandazhou_num++;
+					player.addTempSkill("feitiandazhou_cardUsable");
+				},
+			},
+			cardUsable: {
+				charlotte: true,
+				onremove: function (player) {
+					player.storage.feitiandazhou_num = 0;
+				},
+				mod: {
+					cardUsable: function (card, player, num) {
+						if (player.storage.feitiandazhou_num > 0) return num + player.storage.feitiandazhou_num;
+					}
+				},
+			},
+		},
 	},
 	lurenwangdefanying: {
 		forced: true,
@@ -2276,7 +2310,7 @@ export const skill = {
 	},
 	aishen: {
 		locked: true,
-		group: ["aishen_maxHandcard", "aishen_useCard", "aishen_disable", "aishen_useCardToPlayered", "aishen_lose", "aishen_useCardAfter"],
+		group: ["aishen_maxHandcard", "aishen_useCard", "aishen_disable", "aishen_useCardToPlayered", "aishen_lose"],
 		subSkill: {
 			maxHandcard: {
 				lastDo: true,
@@ -2340,22 +2374,6 @@ export const skill = {
 					for (var i = 0; i < event.cards.length; i++) {
 						if (event.cards[i].original == "e") return true;
 					}
-				},
-				content: function () {
-					// 回复1体力
-					player.recover();
-				},
-			},
-			useCardAfter: {
-				trigger: {
-					target: "useCardToTargeted",
-				},
-				forced: true,
-				locked: true,
-				filter: function (event, player) {
-					// 目标包含你在内的锦囊牌结算完成后
-					if (!["trick", "delay"].includes(get.type(event.card))) return false;
-					return true;
 				},
 				content: function () {
 					// 回复1体力
@@ -2428,16 +2446,32 @@ export const skill = {
 		},
 	},
 	xurui: {
-		trigger: {
-			global: "useCard",
-		},
-		forced: true,
 		locked: true,
-		filter: function (event, player) { 
-			return event.card && ["guohe", "shunshou"].includes(event.card.name) && event.targets.contains(player);
-		},
-		content: function () {
-			trigger.cancel();
+		group: ["xurui_cancel", "xurui_draw"],
+		subSkill: { 
+			cancel: {
+				trigger: {
+					global: "useCard",
+				},
+				forced: true,
+				locked: true,
+				filter: function (event, player) {
+					return event.card && ["guohe", "shunshou"].includes(event.card.name) && event.targets.contains(player);
+				},
+				content: function () {
+					trigger.cancel();
+				},
+			},
+			draw: {
+				trigger: {
+					global: "phaseEnd",
+				},
+				forced: true,
+				locked: true,
+				content: function () { 
+					player.draw();
+				},
+			},
 		},
 	},
 	wuhui: {
@@ -3574,7 +3608,7 @@ export const skill = {
 				return str;
 			},
 		},
-		group: ["yuanzexingwenti_dying", "yuanzexingwenti_add", "yuanzexingwenti_target", "yuanzexingwenti_discard", "yuanzexingwenti_target_and_range", "yuanzexingwenti_usable"],
+		group: ["yuanzexingwenti_dying", "yuanzexingwenti_damage", "yuanzexingwenti_add", "yuanzexingwenti_target", "yuanzexingwenti_discard", "yuanzexingwenti_target_and_range", "yuanzexingwenti_usable"],
 		subSkill: {
 			dying: {
 				trigger: {
@@ -3588,6 +3622,18 @@ export const skill = {
 					player.discard(player.getCards("h"));
 					player.recover(player.countCards("h"));
 					player.removeSkill("yuanzexingwenti");
+				},
+			},
+			damage: {
+				trigger: {
+					player: "damageBegin4",
+				},
+				forced: true,
+				filter: function (event, player) {
+					return event.num > 0;
+				},
+				content: function () {
+					trigger.num *= 2;
 				},
 			},
 			add: {
@@ -3695,10 +3741,10 @@ export const skill = {
 				locked: true,
 				lastDo: true,
 				filter: function (event, player) {
-					return event.num > 10;
+					return event.num > 15;
 				},
 				content: function () {
-					trigger.num = 10;
+					trigger.num = 15;
 				},
 			},
 			draw: {
@@ -3748,37 +3794,7 @@ export const skill = {
 	},
 	huanji: {
 		init: function (player) {
-			player.storage.huanji = false;
-		},
-		trigger: {
-			player: "changeHpAfter",
-		},
-		forced: true,
-		locked: true,
-		filter: function (event, player) { 
-			return !player.storage.huanji && player.hp <= 100;
-		},
-		content: function () {
-			player.storage.huanji = true;
-			player.loseMaxHp(20);
-			player.addSkill("huanji_damage");
 			player.disableEquip([1, 2]);
-		},
-		subSkill: {
-			damage: {
-				trigger: {
-					player: "damageBegin4",
-				},
-				forced: true,
-				locked: true,
-				charlotte: true,
-				filter: function (event, player) {
-					return event.num > 0;
-				},
-				content: function () {
-					trigger.num *= 2;
-				},
-			},
 		},
 	},
 	shiyi: {
@@ -4335,7 +4351,7 @@ export const skill = {
 					return player.countCards("h") < 2;
 				},
 				content: function () {
-					player.draw();
+					player.drawTo(2);
 				},
 			},
 		},
@@ -4364,10 +4380,7 @@ export const skill = {
 					draw++;
 					hujia++;
 				}
-				if (list[1]) {
-					hujia++;
-					sha = Infinity;
-				}
+				if (list[1]) sha = Infinity;
 
 				if (draw > 0) str += "其摸牌时回复1体力<br>其摸牌阶段摸牌数+" + draw + "<br>";
 				if (sha == Infinity) str += "其使用【杀】无距离和次数限制<br>";
@@ -4466,13 +4479,10 @@ export const skill = {
 				forced: true,
 				locked: true,
 				filter: function (event, player) {
-					return (player.storage.wuweizhongshidekangzheng_content[2] || player.storage.wuweizhongshidekangzheng_content[1]) && event.num > 0;
+					return player.storage.wuweizhongshidekangzheng_content[2] && event.num > 0;
 				},
 				content: function () {
-					let add = 0;
-					if (player.storage.wuweizhongshidekangzheng_content[2]) add++;
-					if (player.storage.wuweizhongshidekangzheng_content[1]) add++;
-					player.changeHujia(add, "gain");
+					player.changeHujia(1, "gain");
 				},
 			},
 		},
@@ -4587,6 +4597,101 @@ export const skill = {
 				if (!resultTarget.bool) continue;
 				player.useCard(resultButton.links[0], resultTarget.targets[0], false);
 				cards = cards.filter(card => card != resultButton.links[0]);
+			}
+		},
+	},
+	linyuan: {
+		trigger: {
+			global: "phaseEnd",
+		},
+		limited: true,
+		skillAnimation: true,
+		animationColor: "thunder",
+		locked: true,
+		filter: function (event, player) {
+			return event.player != player;
+		},
+		async content (event, trigger, player) {
+			player.awakenSkill("linyuan");
+			const cards = ["cardPile", "discardPile"].map(pos => Array.from(ui[pos].childNodes)).flat();
+			const filter = card => !get.tag(card, "damage");
+			const pileCards = cards.filter(filter);
+			if (pileCards.length) {
+				await game.cardsGotoSpecial(pileCards);
+				game.log(pileCards, "被移出了游戏");
+			}
+			for (const target of game.players) {
+				const targetCards = target.getCards("hej", filter);
+				if (targetCards.length) {
+					target.$throw(targetCards);
+					game.log(targetCards, "被移出了游戏");
+					await target.lose(targetCards, ui.special);
+				}
+			}
+			ui.clear();
+			game.players.forEach(function (current) {
+				if (current != player) current.addTempSkill("fengyin", { global: "roundEnd" });
+			});
+			player.insertPhase();
+			player.addTempSkill("linyuan_buff", { player: "phaseAfter" });
+		},
+		subSkill: {
+			buff: {
+				trigger: {
+					player: "phaseDrawBegin",
+				},
+				forced: true,
+				locked: true,
+				charlotte: true,
+				content: function () { 
+					trigger.num += 2;
+				},
+				mod: {
+					cardUsable: function (card, player, num) {
+						if (card.name == "sha") return Infinity;
+					},
+					targetInRange: function (card, player, target) {
+						if (card.name == "sha") return true;
+					},
+				}
+			},
+		},
+	},
+	wangmeng: {
+		init: function (player) {
+			player.storage.wangmeng_mark = [];
+		},
+		mark: true,
+		marktext: "梦",
+		intro: {
+			name: "亡梦",
+			nocount: true,
+			mark: function (dialog, storage, player) {
+				dialog.addText("其受到来自以下牌名的牌的伤害时，其摸1张牌");
+				if (player.storage.wangmeng_mark.length) {
+					var cards = [];
+					for (var card of player.storage.wangmeng_mark) {
+						cards.push(game.createCard(card));
+					}
+					dialog.addAuto(cards);
+				}
+			},
+		},
+		trigger: {
+			player: "damageBegin4",
+		},
+		forced: true,
+		locked: true,
+		filter: function (event, player) {
+			return event.card && event.num > 0;
+		},
+		content: function () { 
+			if (!player.storage.wangmeng_mark.includes(trigger.card.name)) {
+				player.storage.wangmeng_mark.push(trigger.card.name);
+				trigger.cancel();
+				ui.clear();
+			} else {
+				player.draw();
 			}
 		},
 	},
