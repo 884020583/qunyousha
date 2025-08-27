@@ -4,12 +4,12 @@ if (!localStorage.getItem('tip')) {
 };
 
 extension["群友杀"] = {
-	date: "2025/08/21",
+	date: "2025/08/28",
 	intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
 	author: "云笺",
 	netdisk: "https://github.com/884020583/qunyousha/tree/main",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.1.5",
+	version: "1.1.8",
 	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "cards.js", "package.js", "info.json", "LICENSE",
 
 		"global/helpFunction.js",
@@ -23,7 +23,7 @@ extension["群友杀"] = {
 		"image/character/shijiu.jpg", "image/character/aili.jpg", "image/character/lvren.jpg", "image/character/zhizimeng.jpg", "image/character/dajiejie.jpg",
 		"image/character/manbu.jpg", "image/character/yuchuanluo.jpg", "image/character/kongmeng.jpg", "image/character/xiaoxiao.jpg", "image/character/sb_dajiejie.jpg",
 		"image/character/zuolaobai.jpg", "image/character/jinbihai.jpg", "image/character/sb_zuolaobai.jpg", "image/character/yuqiu.jpg", "image/character/sb_yunjian.jpg",
-		"image/character/shen_lvren.jpg",
+		"image/character/shen_lvren.jpg", "image/character/re_KK_jiang.jpg", "image/character/lifu_Hina.jpg", "image/character/luoming.jpg",
 	],
 	size: "<30MB"
 };

@@ -13,6 +13,15 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 					if (lib.character[i][4].indexOf("forbidai") < 0) lib.character[i][4].push("forbidai");
 				}
 			}
+			
+			// 添加自定义前缀处理
+			if (lib.namePrefix && lib.qunyoushaPrefix) {
+				// 添加自定义前缀样式
+				for (const prefixName in lib.qunyoushaPrefix) {
+					const prefixStyle = lib.qunyoushaPrefix[prefixName];
+					lib.namePrefix.set(prefixName, prefixStyle);
+				}
+			}
 		}, precontent: async function(qunyousha) {
 			// 加载global文件夹内的js文件
 			const addImport = function(url) {
@@ -88,6 +97,11 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 				if (!lib.config.characters.includes('qunyousha')) lib.config.characters.push('qunyousha');
 				lib.translate['qunyousha_character_config'] = '群友杀';
 
+				// 保存自定义前缀配置
+				if (translation.prefix) {
+					lib.qunyoushaPrefix = translation.prefix;
+				}
+
 				game.import('card', function() {
 					var qunyousha = {
 						name: 'qunyousha',
@@ -131,7 +145,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
 			author: "云笺",
 			netdisk: "https://github.com/884020583/qunyousha/tree/main",
 			forum: "https://qm.qq.com/q/DKBfxgqP4G",
-			version: "1.1.5",
+			version: "1.1.8",
 		}, files: {
 			"character": [],
 			"card": [],

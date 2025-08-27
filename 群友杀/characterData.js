@@ -31,7 +31,7 @@ export const groups = {
 	},
 	aoye: {
 		short: "熬夜派",
-		trannameslation: "熬夜派",
+		name: "熬夜派",
 		color: "#2F4F4F",
 		image: "./extension/群友杀/image/groups/aoye.png",
 	}
@@ -64,6 +64,9 @@ export const intro = {
 	yuqiu: "一吃爱吃杂鱼の猫猫",
 	sb_yunjian: "闲云一片挂窗边，偶落风前作信笺。<br>写到斜阳沉未竟，空余墨色染茶烟。",
 	shen_lvren: "明明厌恶着孤独，却从未离开过深渊的边缘",
+	re_KK_jiang: "杂鱼kk的救赎之路",
+	lifu_Hina: "穿上了礼服的日奈，将会带给我们令人期待的演出",
+	luoming: "神奇的穷神吗？有点意思！",
 };
 
 export const character = {
@@ -243,8 +246,26 @@ export const character = {
 		hp: 3,
 		skills: ["linyuan", "wangmeng"],
 	},
+	re_KK_jiang: {
+		sex: "male",
+		group: "zako",
+		hp: 5,
+		skills: ["re_haqi", "re_keai", "wodaoyaokankan", "shi_KK_o", "zako_dejiban"],
+	},
+	lifu_Hina: {
+		sex: "female",
+		group: "waijing",
+		hp: 4,
+		skills: ["kaimuyanchu", "zhongmuzhixuanlv", "jiangsinianjituoyuci", "zhoumidezhunbei"],
+	},
+	luoming: {
+		sex: "male",
+		group: "feisheng",
+		hp: 3,
+		skills: ["shenlin", "shijie", "guifashi", "wumianren"],
+	},
 };
 
 export const title = {
-
+	
 };

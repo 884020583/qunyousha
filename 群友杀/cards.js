@@ -178,7 +178,7 @@ export const skill = {
             damage: {
                 equipSkill: true,
                 trigger: {
-                    player: "damageBegin",
+                    player: "damageBegin4",
                 },
                 lastDo: true,
                 forced: true,
