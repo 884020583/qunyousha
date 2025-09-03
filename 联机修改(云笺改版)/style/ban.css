@@ -1,0 +1,308 @@
+.bandMenu {
+    background-color: rgba(0,0,0,0.5);
+    width: 90%;
+    height: 80%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 10px;
+    z-index: 20;
+    overflow: hidden;
+}
+.bandMenu .headis {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px solid black;
+}
+.centeris .leftsc,
+.bandMenu .iselect {
+    transition: background-color 1.2s,font-weight 1.2s;
+    cursor: pointer;
+}
+.centeris .leftsc, .rihtcenze .rigtsc,
+.bandMenu .iselect,
+.bandMenu .close,
+.select .opt{
+    text-align: center;
+}
+.bandMenu .iselect {
+    width: 70px;
+    height: 30px;
+    border-radius: 5px;
+    position: unset;
+    background-color: rgb(0,0,0,.3);
+    padding: 5px 20px;
+    margin: 0 20px;
+    line-height: 30px;
+}
+.bandMenu .close {
+    width: 100px;
+    height: 40px;
+    line-height: 40px;
+    right: 0;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.7);
+}
+.bandMenu .centeris {
+    width: 13.4%;
+    height: calc(100% - 40px);
+    top: 40px;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column;
+}
+.bandMenu .active 
+/* .bandMenu .iselect.active  */
+{
+    cursor: unset;
+}
+.bandMenu .active,.bandMenu .select .active{
+    background-color: rgb(0 126 255 / 30%);
+}
+.bandMenu .active,
+.bandMenu .select .active,
+.aloowmenu .packCharacter .packname,
+.rihtcenze .rigtsc.nowUse {
+    font-weight: 700;
+}
+.centeris .leftsc:not(.active), .rihtcenze .rigtsc:not(.active):not(.now):not(.nowUse) {
+    background-color: rgba(0,0,0,0.5);
+}
+.centeris .leftsc, .rihtcenze .rigtsc {
+    width: 90px;
+    height: 40px;
+    position: relative;
+    left: 20%;
+    border-radius: 5px;
+    margin: 5px;
+    line-height: 40px;
+    white-space: nowrap;
+}
+.rihtcenze .rigtsc {
+    left: 20%;
+}
+.aloowmenu {
+    left: 13.4%;
+    top: 45px;
+    height: calc(100% - 55px);
+    border: 1px solid;
+    border-radius: 5px;
+    overflow: scroll;
+    transition: width 1.2s,opacity 1.2s;
+}
+.aloowmenu.big {
+    width: calc(100% - 25.4%);
+}
+.aloowmenu:not(.big){
+    width: calc(100% - 34.4%);
+}
+
+.aloowmenu .packCharacter {
+    position: relative;
+    margin-top: 60px;
+    width: 100%;
+}
+.aloowmenu .packCharacter .packname {
+    top: -35px;
+    left: 10px;
+    font-size: 20px;
+}
+.aloowmenu .packCharacter .button {
+    cursor: pointer;
+}
+.aloowmenu .packCharacter .button.closes {
+    opacity: 0.5;
+}
+.bandMenu .rihtcenze {
+    right: 0;
+    width: calc(100% - 88.4%);
+    height: 100%;
+    top: 40px;
+}
+.bandMenu .select {
+    width: auto;
+    height: auto;
+    padding: 10px;
+    right: 10%;
+    top: 40px;
+    background-color: rgba(0,0,0,0.6);
+    transition: max-width 1.2s,padding 1.2s;
+    white-space: nowrap;;
+    max-width: 120px;
+}
+.bandMenu .select.hide {
+    max-width: 0;
+    overflow: hidden;
+    padding: 0;
+}
+.bandMenu .select:not(.hide) {
+    border-radius: 5px;
+    max-width: 120px;
+}
+.select {
+    display: flex;
+    flex-direction: column;
+}
+.select .opt {
+    position: relative;
+    background-color: rgb(134 103 170 / 30%);
+    padding: 10px 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.rigtsc.useNow.hide,
+.bandMenu .centeris  .after {
+    opacity: 0;
+}
+.bandMenu .centeris  .active {
+    transition: opacity 1s;
+}
+.bandMenu .centeris .leftsc:not(.active) .closePack {
+    font-size: 0;
+}
+.bandMenu .centeris .active .closePack {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    left: 105%;
+    line-height: 30px;
+    cursor: pointer;
+    top: 5px;
+    border: 1px solid #fff;
+    font-size: 20px;
+}
+/* .bandMenu .centeris .active::after {
+    content: 'X';
+    position: absolute;
+    left: 105%;
+    border: 1px solid #fff;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    top: 5px;
+    cursor: pointer;
+    opacity: 1;
+} */
+.centeris .leftsc.close {
+    opacity: 0.5;
+    color: #d87070;
+}
+.rihtcenze .rigtsc.nowUse {
+    color: skyblue;
+}
+.sunsine{
+    animation: 3s linear;
+    animation-name: sunsine;
+}
+@keyframes sunsine {
+    0%{
+        color: aqua;
+    }
+    50%{
+        color: rgb(0, 255, 255);
+    }
+    75%{
+        color: rgba(0, 255, 255, 0.507);
+    }
+    100%{
+        color: #fff
+    }
+}
+.bandMenu,
+div#animateConfig {
+    border: 15px solid;
+    border-image-source: url("../image/border.png");
+    border-image-slice: 15;
+    background-color: rgba(0,0,0,0.5);
+}
+.popup-container{
+    z-index: 100;
+}
+.opt.noremove,
+.guan {
+    color: red;
+}
+.dakai {
+    color: skyblue;
+}
+
+
+
+#sstball {
+    --wushi: 40px;
+    width: var(--wushi);
+    height: var(--wushi);
+    border-radius: 50%;
+    box-sizing: border-box;
+    position: relative;
+    transition: unset;
+    top: 50%;
+}
+#sstball svg.bi.bi-tools {
+    width: 30px;
+    height: 30px;
+    border: 3px solid;
+    padding: 3px;
+    border-radius: 5px;
+    pointer-events: none;
+}
+#sstball:hover svg.bi.bi-tools {
+    background-color: #000;
+    color: #fff;
+}
+#sstball{
+    z-index: 100000;
+}
+.aniConfig.opening{
+    z-index: 50;
+}
+@keyframes left {
+    0%{
+        transform: translateX(0);
+    }
+    100%{
+        transform: translateX(-50%);
+    }
+}
+.nomal {
+    opacity: 0.5;
+    cursor: pointer;
+    background-color: rgba(0,0,0,.3);
+}
+.move {
+    cursor: move;
+    background-color: rgba(121, 162, 166, 0.3);
+}
+
+
+div#animateConfig{
+    background-color: rgba(0,0,0,.3);
+}
+.aniConfig:not(.opening) {
+    width: 0;
+    height: 0;
+    top: 50%;
+    left: -10%;
+}
+.aniConfig.opening {
+    width: 80%;
+    height: 80%;
+    left: 10%;
+    top: 10%;
+    border-radius: 10px;
+}
+.setMima.dialog {
+    width:200px;
+    height:100px;
+    background-color:rgba(0,0,0,.3);
+    width:400px;
+    height:70px;
+    left:40%;
+    top: 40%;
+    z-index:100;
+    border-radius:10px;
+    border:3px solid black;
+}
