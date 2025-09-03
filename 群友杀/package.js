@@ -5,7 +5,8 @@ extension["群友杀"] = {
 	netdisk: "https://github.com/884020583/qunyousha/tree/main",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
 	version: "1.2.0",
-	files: ["extension.js", "characterData.js", "characterSkill.js", "translation.js", "cards.js", "package.js", "info.json", "LICENSE",
+	files: [
+		"extension.js", "characterData.js", "characterSkill.js", "translation.js", "cards.js", "package.js", "info.json", "README.md", "LICENSE",
 
 		"global/helpFunction.js",
 		
@@ -19,7 +20,7 @@ extension["群友杀"] = {
 		"image/character/manbu.jpg", "image/character/yuchuanluo.jpg", "image/character/kongmeng.jpg", "image/character/xiaoxiao.jpg", "image/character/sb_dajiejie.jpg",
 		"image/character/zuolaobai.jpg", "image/character/jinbihai.jpg", "image/character/sb_zuolaobai.jpg", "image/character/yuqiu.jpg", "image/character/sb_yunjian.jpg",
 		"image/character/shen_lvren.jpg", "image/character/re_KK_jiang.jpg", "image/character/lifu_Hina.jpg", "image/character/luoming.jpg", "image/character/shen_mojiexianjun_zuolaobai.jpg",
-		
+		"image/character/shen_mojiexianjun_zuolaobai_shadow.jpg"
 	],
 	size: "<30MB"
 };
