@@ -4,7 +4,7 @@ window.lm_import = function (func) {
 };
 game.import("extension", function (lib, game, ui, get, ai, _status) {
     const xiugai = {
-        name: "联机修改(云笺改版)",
+        name: "联机修改",
         editable: false,
         content() { },
         precontent(configs) {
