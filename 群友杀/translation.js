@@ -12,11 +12,25 @@ export const cardSkill = {
 	fangbaodun_skill_info: "你不受来自红色无属性【杀】和黑色的伤害性锦囊牌的伤害。你每次受到伤害的伤害值不超过2",
 };
 
+// 用于联机模式选择势力用，和联机修改扩展配合使用
+export const vcard = {
+	group_zako: "zako派",
+	group_waijing: "歪经派",
+	group_feisheng: "飞升派",
+	group_shigan: "实干派",
+	group_aoye: "熬夜派",
+};
+
 export const prefix = {
 	"礼服": {
 		color: "#95438aff",
 		nature: "ice",
 		showNane: "礼服",
+	},
+	"末劫仙君": {
+		color: "#8A0303",
+		nature: "ice",
+		showNane: "末劫仙君",
 	},
 };
 
@@ -56,6 +70,8 @@ export const character = {
 	lifu_Hina: "礼服Hina",
 	lifu_Hina_prefix: "礼服",
 	luoming: "洛茗",
+	shen_mojiexianjun_zuolaobai: "神末劫仙君坐牢白",
+	shen_mojiexianjun_zuolaobai_prefix: "神|末劫仙君",
 };
 
 export const characterSkill = {
@@ -269,5 +285,18 @@ export const characterSkill = {
 	guifashi_info: "摸牌阶段，你改为选择一项：1.你摸4张牌；2.你摸1张牌并判定，若结果为1~10，你可以继续发动此技能，直到判定失败。当你受到伤害时，你可以失去x【触】标记取消之（x为此伤害的伤害值）。当你造成伤害时，你可以失去1【触】标记令此伤害的伤害值+1",
 	wumianren: "无面人",
 	wumianren_info: "当有牌进入或离开你的装备区时，你摸1张牌。当你受到伤害时，令其弃置1张牌",
-
+	qys_jiewei: "劫威",
+	qys_jiewei_info: "每回合限一次，出牌阶段，你可以弃置一张牌并选择任意名其他角色，令其交给你一张牌，然后你摸x张牌（x为你以此法获得的基本牌数）",
+	menxin: "扪心",
+	menxin_info: "锁定技 你摸牌阶段的摸牌数改为2x（x为你的体力值）。游戏开始时，废除你的防具栏。你的手牌上限改为9。当你获得牌时，你获得同等数量的【异心】标记。若你的【倚政】已觉醒：你获得【异心】标记后，若其数量不少于100，你失去所有【异心】标记并获得50【镇关】标记；当你弃置牌时，你获得同等数量的【镇关】标记",
+	lishi: "立势",
+	lishi_info: "锁定技 游戏开始时，公布你的身份，并根据你的身份获得不同效果：<br>主：你的体力上限+1<br>忠：你获得额外的一个武器栏<br>反：你对主造成的伤害+1<br>内：当你造成伤害或体力发生变化时，你摸1张牌",
+	qys_yizheng: "倚政",
+	qys_yizheng_info: "觉醒技 当你的体力不大于1或你的回合开始且【异心】标记不小于100时，你失去所有【异心】标记并获得100【镇关】标记，然后你觉醒，你失去1体力上限和【劫威】，体力回复至体力上限并获得【荡荒】、【定疆】和【诛异】",
+	danghuang: "荡荒",
+	danghuang_info: "每回合限一次，出牌阶段，你可以选择任意名其他角色，令其选择一项：1.受到1伤害并弃置1张牌；2.交给你2张牌",
+	dingjiang: "定疆",
+	dingjiang_info: "出牌阶段，若你的【镇关】标记数不小于100，你可以失去所有【镇关】标记并弃置9张手牌，令任意名角色失去1体力上限",
+	zhuyi: "诛异",
+	zhuyi_info: "一名其他角色的回合结束时，若其手牌数大于你，你可对其造成1伤害",
 };

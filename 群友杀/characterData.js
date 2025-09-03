@@ -1,39 +1,33 @@
 export const groups = {
-	qunyou: {
-		short: "群友",
-		name: "群友",
-		color: "#FFD700",
-		image: "./extension/群友杀/image/groups/qunyou.png",
-	},
 	zako: {
 		short: "zako派",
 		name: "zako派",
 		color: "#87CEEB",
-		image: "./extension/群友杀/image/groups/zako.png",
+		image: "ext:群友杀/image/groups/zako.png",
 	},
 	waijing: {
 		short: "歪经派",
 		name: "歪经派",
 		color: "#32CD32",
-		image: "./extension/群友杀/image/groups/waijing.png",
+		image: "ext:群友杀/image/groups/waijing.png",
 	},
 	feisheng: {
 		short: "飞升派",
 		name: "飞升派",
 		color: "#BA55D3",
-		image: "./extension/群友杀/image/groups/feisheng.png",
+		image: "ext:群友杀/image/groups/feisheng.png",
 	},
 	shigan: {
 		short: "实干派",
 		name: "实干派",
 		color: "#FF4500",
-		image: "./extension/群友杀/image/groups/shigan.png",
+		image: "ext:群友杀/image/groups/shigan.png",
 	},
 	aoye: {
 		short: "熬夜派",
 		name: "熬夜派",
 		color: "#2F4F4F",
-		image: "./extension/群友杀/image/groups/aoye.png",
+		image: "ext:群友杀/image/groups/aoye.png",
 	}
 };
 
@@ -67,12 +61,13 @@ export const intro = {
 	re_KK_jiang: "杂鱼kk的救赎之路",
 	lifu_Hina: "穿上了礼服的日奈，将会带给我们令人期待的演出",
 	luoming: "神奇的穷神吗？有点意思！",
+	shen_mojiexianjun_zuolaobai: "吾代天子掌朝，谁敢不尊谁敢不从！",
 };
 
 export const character = {
 	testcharacter: {
 		sex: "double",
-		group: "qunyou",
+		group: "shigan",
 		hp: 5,
 		maxHp: 10,
 		hujia: 5,
@@ -263,6 +258,12 @@ export const character = {
 		group: "feisheng",
 		hp: 3,
 		skills: ["shenlin", "shijie", "guifashi", "wumianren"],
+	},
+	shen_mojiexianjun_zuolaobai: {
+		sex: "male",
+		group: "shen",
+		hp: 4,
+		skills: ["qys_jiewei", "qys_yizheng", "lishi", "menxin"],
 	},
 };
 

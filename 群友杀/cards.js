@@ -40,6 +40,7 @@ export const card = {
         fullskin: false,
         image: "ext:群友杀/image/card/woyaokanninvzhuang.png",
         enable: true,
+        recastable: true,
         selectTarget: 1,
         filterTarget: (card, player, target) => target != player && target.canEquip({ name: "nvzhuang", suit: "club", number: 3 }, true),
         allowMultiple: false,
@@ -55,6 +56,7 @@ export const card = {
         enable: function (card, player) {
             return ["female", "double"].includes(player.sex);
         },
+        recastable: true,
         selectTarget: 1,
         filterTarget: (card, player, target) => target != player && ["female", "double"].includes(target.sex),
         allowMultiple: false,
