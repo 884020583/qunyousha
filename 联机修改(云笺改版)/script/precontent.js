@@ -59166,7 +59166,7 @@
     lib.element.content.replaceHandcardsOL = suiSet.replaceHandcardEvent
 
     const mode = ['doudizhu', 'identity', 'versus']
-    mode.forEach(m => suiSet.addImport(`extension/联机修改(云笺改版)/script/mode/${m}.js`))
+    mode.forEach(m => suiSet.addImport(`extension/联机修改/script/mode/${m}.js`))
 
     game.TrueHasExtension = ext => lib.config.extensions && lib.config.extensions.includes(ext)
     game.HasExtension = ext => game.TrueHasExtension(ext) && lib.config['extension_' + ext + '_enable']

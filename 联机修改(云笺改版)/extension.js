@@ -4,7 +4,7 @@ window.lm_import = function (func) {
 };
 game.import("extension", function (lib, game, ui, get, ai, _status) {
     const xiugai = {
-        name: "联机修改(云笺改版)",
+        name: "联机修改",
         editable: false,
         content() { },
         precontent(configs) {
@@ -14,7 +14,7 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                     'identity', 'doudizhu', 'versus', 'DIYmode', 'tiaozhan', 't_jiuzhou',
                 ],
                 igextension: [
-                    '应用配置', '拖拽读取', '在线更新', 'OL设置', '一劳永逸', '联机修改(云笺改版)', 'SJ Settings', '武将修改', 'AI优化', 'OLset'
+                    '应用配置', '拖拽读取', '在线更新', 'OL设置', '一劳永逸', '联机修改', 'SJ Settings', '武将修改', 'AI优化', 'OLset'
                 ],
                 addImport(url) {
                     const script = document.createElement('script')
@@ -96,10 +96,10 @@ game.import("extension", function (lib, game, ui, get, ai, _status) {
                 // 'cards','characters','hdwj'
                 'chooseCharacterOL', 'initBandList', 'skillSet', 'video', 'connect'
             ]
-            lib.init.js(`${lib.assetURL}extension/联机修改(云笺改版)/script`, 'precontent', () => {
-                useJs.forEach(m => suiSet.addImport(`extension/联机修改(云笺改版)/script/${m}.js`))
-                lib.init.css(`${lib.assetURL}extension/联机修改(云笺改版)/style`, 'ban')
-                lib.init.css(`${lib.assetURL}extension/联机修改(云笺改版)/style`, 'cards')
+            lib.init.js(`${lib.assetURL}extension/联机修改/script`, 'precontent', () => {
+                useJs.forEach(m => suiSet.addImport(`extension/联机修改/script/${m}.js`))
+                lib.init.css(`${lib.assetURL}extension/联机修改/style`, 'ban')
+                lib.init.css(`${lib.assetURL}extension/联机修改/style`, 'cards')
             })
             suiSet.config = this.config
         },
