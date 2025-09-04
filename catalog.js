@@ -46,7 +46,7 @@ extension["联机修改"] = {
 		"script/miniandWeChat.js", "script/player.js", "script/precontent.js", "script/private.js", "script/replacePlayer.js", "script/skillSet.js",
 		"script/tempSkills.js", "script/video.js",
 
-		"style/ban.css", "style/cards.css"
+		"style/ban.css", "style/cards.css",
 	],
 	size: "<10MB"
 };
