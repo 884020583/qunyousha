@@ -29,13 +29,13 @@ extension["群友杀"] = {
 	size: "<30MB"
 };
 
-extension["联机修改(云笺改版)"] = {
+extension["联机修改"] = {
 	date: "2025/09/02",
-	intro: "版本：1.678|1.0.0<br>支持联机模式神将和多势力角色能够选取自定义势力",
-	author: "岁儿|云笺",
-	netdisk: "https://github.com/884020583/qunyousha/tree/main",
-	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.678|1.0.0",
+	intro: "版本：1.678",
+	author: "岁儿",
+	netdisk: "",
+	forum: "",
+	version: "1.0",
 	files: [
 		"extension.js", "package.js", "info.json", "LICENSE",
 
