@@ -165,14 +165,13 @@ export const skill = {
 	},
 	test1: {
 		enable: "phaseUse",
-		content: function (event, trigger, player) {
-			const card = game.createCard("woyaokanninvzhuang", "spade", 9);
-			player.gain(card, "draw");
+		content: function () {
+			player.draw(3, "visible", "bottom");
 		},
 	},
 	test2: {
 		enable: "phaseUse",
-		content: function (event, trigger, player) {
+		content: function () {
 			const card = game.createCard("kaikou", "heart", 6);
 			player.gain(card, "draw");
 		},
@@ -3050,6 +3049,9 @@ export const skill = {
 				return num + 1;
 			},
 		},
+		ai: {
+			threaten: 1.3,
+		},
 	},
 	bug: {
 		locked: true,
@@ -3072,6 +3074,13 @@ export const skill = {
 				content: function () { 
 					player.recover();
 				},
+				ai: {
+					effect: {
+						target: function (card, player, target) {
+							if (get.type(card) == "delay" && target.getDamagedHp() > 0) return 0.8;
+						},
+					},
+				},
 			},
 			cancel: { 
 				trigger: {
@@ -3085,8 +3094,21 @@ export const skill = {
 					return event.player != player && player.countCards("h") >= 2;
 				},
 				async content (event, trigger, player) {
-					await player.discardPlayerCard(player, "h", 2, true);
+					await player.chooseToDiscard("h", 2, true);
 					trigger.player.recoverTo(1);
+				},
+				check: function (event, player) {
+					return get.attitude(player, event.player) > 0 ? true : false;
+				},
+				ai: {
+					threaten: 1.5,
+					expose: 0.4,
+					effect: {
+						target: function (card, player, target) {
+							if (["guohe", "shunshou"].includes(card.name)) return [1, 1];
+						},
+					},
+					save: true,
 				},
 			},
 			dying: {
@@ -3117,8 +3139,15 @@ export const skill = {
 					return event.card && get.type(event.card) == "delay";
 				},
 				content: function () { 
-					player.recover();
 					player.gainMaxHp();
+					player.recover();
+				},
+				ai: {
+					effect: {
+						target: function (card, player, target) {
+							if (get.type(card) == "delay") return 0.8;
+						},
+					},
 				},
 			},
 			overflow: { 
@@ -3132,6 +3161,9 @@ export const skill = {
 				},
 				content: function () {
 					trigger.num = 2;
+				},
+				ai: {
+					filterDamage: true,
 				},
 			},
 			cancel: {
@@ -3148,6 +3180,17 @@ export const skill = {
 				async content (event, trigger, player) {
 					const result = await player.discardPlayerCard("he", player, trigger.num, true).forResult();
 					if (result.bool) trigger.num = 0;
+				},
+				ai: {
+					skillTagFilter: function (player, tag, arg) {
+						if (tag == "nodamage") return player.countCards("he") > 0;
+					},
+					nodamage: true,
+					effect: {
+						target: function (card, player, target) {
+							if (["guohe", "shunshou"].includes(card.name)) return 1.5;
+						},
+					},
 				},
 			},
 		},
@@ -3175,6 +3218,14 @@ export const skill = {
 				player.loseHp();
 			}
 		},
+		ai: {
+			threaten: 1.2,
+			effect: {
+				player: function (card, player, target) { 
+					if (get.tag(card, "damage")) return [1, 1];
+				},
+			},
+		},
 	},
 	qishizhengjing: {
 		trigger: {
@@ -3196,9 +3247,12 @@ export const skill = {
 					if (player.countCards("he") > 0) return list[0];
 					return list[1];
 				}).forResult();
-				if (result.control == list[0]) await player.chooseToDiscard("he", 1, true).set("ai", function (card) { return 7 - get.value(card); });
+				if (result.control == list[0]) await player.chooseToDiscard("he", 1, true).set("ai", function (card) { return 5 - get.value(card); });
 				else player.loseHp();
 			}
+		},
+		ai: {
+			neg: true,
 		},
 	},
 	zako_zhiwang: {
@@ -4482,9 +4536,9 @@ export const skill = {
 			player.storage.qinxue_mark = [];
 		},
 		mark: true,
-		marktext: "勉",
+		marktext: "勤",
 		intro: {
-			name: "共勉",
+			name: "勤学",
 			nocount: true,
 			mark: function (dialog, storage, player) {
 				dialog.addText("已记录的牌名：");
@@ -4522,6 +4576,10 @@ export const skill = {
 				filter: function (event, player) { 
 					return player.storage.qinxue_mark.length > 0 && player.countCards("hes") > 0;
 				},
+				hiddenCard: function (player, name) {
+					if (!lib.inpile.includes(name)) return false;
+					return player.storage.qinxue_mark.includes(name) && player.countCards("hes") > 0;
+				},
 				chooseButton: {
 					dialog: function (event, player) { 
 						var list = [];
@@ -4549,6 +4607,43 @@ export const skill = {
 					},
 					prompt: function (links, player) {
 						return "将一张牌当做【" + (get.translation(links[0][3]) || "") + get.translation(links[0][2]) + "】使用";
+					},
+					check: function (button) {
+						if (_status.event.getParent().type != "phase") return 1;
+						var player = _status.event.player;
+						if (["zhulu_card", "yiyi", "lulitongxin", "lianjunshengyan", "diaohulishan"].includes(button.link[2])) return 0;
+						return player.getUseValue({
+							name: button.link[2],
+							nature: button.link[3],
+						});
+					},
+				},
+				ai: {
+					theraten: 2.5,
+					fireAttack: true,
+					respondSha: true,
+					respondShan: true,
+					skillTagFilter(player, tag, arg) {
+						const list = player.storage.qinxue_mark;
+						switch (tag) {
+							case "fireAttack": 
+								if (list.includes("huogong")) return true;
+								break;
+							case "respondSha": 
+								if (list.includes("sha")) return true;
+								break;
+							case "respondShan": 
+								if (list.includes("shan")) return true;
+								break;
+						}
+					},
+					result: {
+						player: function (player) {
+							if (_status.event.dying) {
+								return get.attitude(player, _status.event.dying);
+							}
+							return 1;
+						},
 					},
 				},
 			},
@@ -4579,10 +4674,14 @@ export const skill = {
 			const num = game.players.length;
 			var cards = get.cards(num, true);
 			while (count--) {
-				const resultButton = await player.chooseButton(["你可以对一名合法角色使用其中1张牌", [cards, "card"]], 1, false).forResult();
+				const resultButton = await player.chooseButton(["你可以对一名合法角色使用其中1张牌", [cards, "card"]], 1, false).set("ai", function (button) {
+					return player.getUseValue(button.link);
+				}).forResult();
 				if (!resultButton.bool) break;
 				const resultTarget = await player.chooseTarget(1, false, function (card, player, target) {
 					return player.canUse(resultButton.links[0], target);
+				}).set("ai", function (target) {
+					return get.effect(target, resultButton.links[0], player, player);
 				}).forResult();
 				if (!resultTarget.bool) continue;
 				player.useCard(resultButton.links[0], resultTarget.targets[0], false);

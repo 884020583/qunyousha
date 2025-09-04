@@ -1,6 +1,6 @@
 # 群友杀扩展
 
-![云师傅](https://github.com/884020583/qunyousha/blob/main/image/character/yunjian.jpg?raw=true)
+![云师傅](image/character/yunjian.jpg?raw=true)
 
 > 灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)
 
