@@ -62,6 +62,8 @@ export const intro = {
 	lifu_Hina: "穿上了礼服的日奈，将会带给我们令人期待的演出",
 	luoming: "神奇的穷神吗？有点意思！",
 	shen_mojiexianjun_zuolaobai: "吾代天子掌朝，谁敢不尊谁敢不从！",
+	kelvdela: "刻0德菈",
+	sp_yuchuanluo: "已退坑的MC十年老服主+插件开发者 | 摸鱼Java+Python后端开发 | 业余洋垃圾服务器爱好者+运维 | C++学习中 | 打死不写UI |",
 };
 
 export const character = {
@@ -264,6 +266,18 @@ export const character = {
 		group: "shen",
 		hp: 4,
 		skills: ["qys_jiewei", "qys_yizheng", "lishi", "menxin"],
+	},
+	kelvdela: {
+		sex: "female",
+		group: "waijing",
+		hp: 5,
+		skills: ["fengjue", "junming"],
+	},
+	sp_yuchuanluo: {
+		sex: "double",
+		group: "shigan",
+		hp: 4,
+		skills: ["duankou", "hulian", "Ping"],
 	},
 };
 
