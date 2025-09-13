@@ -64,6 +64,8 @@ export const intro = {
 	shen_mojiexianjun_zuolaobai: "吾代天子掌朝，谁敢不尊谁敢不从！",
 	kelvdela: "刻0德菈",
 	sp_yuchuanluo: "已退坑的MC十年老服主+插件开发者 | 摸鱼Java+Python后端开发 | 业余洋垃圾服务器爱好者+运维 | C++学习中 | 打死不写UI |",
+	sb_kongmeng: "aaa乐土<s>坑钱</s>猫猫",
+	guzhangjiqiren: "一具产生了自我意识的战斗型机器人，其所搭载的远古科技使其可以操控充能球",
 };
 
 export const character = {
@@ -279,8 +281,16 @@ export const character = {
 		hp: 4,
 		skills: ["duankou", "hulian", "Ping"],
 	},
-};
-
-export const title = {
-	
+	sb_kongmeng: {
+		sex: "female",
+		group: "zako",
+		hp: 3,
+		skills: ["songmu", "chuwai", "xiaoguo"],
+	},
+	guzhangjiqiren: {
+		sex: "none",
+		group: "zako",
+		hp: 3,
+		skills: ["chongnengqiu", "suipianzhengli", "chuangzaoxing_AI"],
+	},
 };
