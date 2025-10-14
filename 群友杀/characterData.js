@@ -63,14 +63,19 @@ export const intro = {
 	luoming: "神奇的穷神吗？有点意思！",
 	shen_mojiexianjun_zuolaobai: "吾代天子掌朝，谁敢不尊谁敢不从！",
 	kelvdela: "刻0德菈",
-	sp_yuchuanluo: "已退坑的MC十年老服主+插件开发者 | 摸鱼Java+Python后端开发 | 业余洋垃圾服务器爱好者+运维 | C++学习中 | 打死不写UI |",
+	old_sp_yuchuanluo: "已退坑的MC十年老服主+插件开发者 | 摸鱼Java+Python后端开发 | 业余洋垃圾服务器爱好者+运维 | C++学习中 | 打死不写UI |",
 	sb_kongmeng: "aaa乐土<s>坑钱</s>猫猫",
 	guzhangjiqiren: "一具产生了自我意识的战斗型机器人，其所搭载的远古科技使其可以操控充能球",
+	haiseyin: "海瑟1",
+	sp_dajiejie: "“此身便是我存在于世的最好证明”——敬永不放弃的各位",
+	sp_jinbihai: "一袋猫粮",
+	sp_yunjian: "“那咋了？就要就要！”",
+	shen_dajiejie: "真正的大师，永远怀着一颗学徒之心",
 };
 
 export const character = {
 	testcharacter: {
-		sex: "double",
+		sex: "male",
 		group: "shigan",
 		hp: 5,
 		maxHp: 10,
@@ -135,7 +140,7 @@ export const character = {
 	chengzi: {
 		sex: "male",
 		group: "feisheng",
-		hp: 9,
+		hp: 6,
 		skills: ["feitiandazhou", "lurenwangdefanying", "chudifantan", "jiuchengsanwujin"],
 	},
 	shijiu: {
@@ -202,7 +207,7 @@ export const character = {
 	sb_dajiejie: {
 		sex: "female",
 		group: "waijing",
-		hp: 100,
+		hp: 50,
 		skills: ["yuanzexingwenti", "wojiushiyuanze", "zhanli", "huanji"],
 	},
 	zuolaobai: {
@@ -243,7 +248,7 @@ export const character = {
 		sex: "male",
 		group: "shen",
 		hp: 3,
-		skills: ["linyuan", "wangmeng"],
+		skills: ["linyuan", "wangmeng", "xinglv"],
 	},
 	re_KK_jiang: {
 		sex: "male",
@@ -275,22 +280,56 @@ export const character = {
 		hp: 5,
 		skills: ["fengjue", "junming"],
 	},
-	sp_yuchuanluo: {
+	old_sp_yuchuanluo: {
 		sex: "double",
 		group: "shigan",
 		hp: 4,
+		isAiForbidden: true,
 		skills: ["duankou", "hulian", "Ping"],
 	},
 	sb_kongmeng: {
 		sex: "female",
 		group: "zako",
 		hp: 3,
-		skills: ["songmu", "chuwai", "xiaoguo"],
+		skills: ["songmu", "chuwai", "xiaoguo", "zako_dejiban"],
 	},
 	guzhangjiqiren: {
 		sex: "none",
 		group: "zako",
 		hp: 3,
-		skills: ["chongnengqiu", "suipianzhengli", "chuangzaoxing_AI"],
+		skills: ["chongnengqiu", "suipianzhengli", "chuangzaoxing_AI", "zako_dejiban"],
+	},
+	haiseyin: {
+		sex: "female",
+		group: "waijing",
+		hp: 4,
+		skills: ["juehaihuitao", "haiyaodeshouwang"],
+	},
+	sp_dajiejie: {
+		sex: "female",
+		group: "aoye",
+		hp: 5,
+		skills: ["weiqingsude", "heyiwei", "nanyiwangque", "womenshipengyouduiba", "zhongfen"],
+	},
+	sp_jinbihai: {
+		sex: "male",
+		group: "zako",
+		hp: 4,
+		maxHp: 5,
+		skills: ["maoliang", "qianxia", "guaiqiao", "zako_dejiban"],
+	},
+	sp_yunjian: {
+		sex: "male",
+		group: "waijing",
+		hp: 3,
+		maxHp: 4,
+		hujia: 1,
+		skills: ["kexue", "mianji", "qys_juesi"],
+	},
+	shen_dajiejie: {
+		sex: "female",
+		group: "shen",
+		hp: 4,
+		skills: ["yi_huanqi", "mi_wushen", "tianshengdewuzhe", "qys_qianxun"],
 	},
 };

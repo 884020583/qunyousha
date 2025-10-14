@@ -36,6 +36,21 @@ export const card = {
         toself: true,
     },
     woyaokanninvzhuang: {
+        ai: {
+            basic: {
+                order: 8,
+                useful: 5,
+                value: 1,
+                result: {
+                    target: function (player, target) {
+                        return -2;
+                    },
+                    player: function (player, target) {
+                        return 2;
+                    },
+                },
+            },
+        },
         type: "trick",
         fullskin: false,
         image: "ext:群友杀/image/card/woyaokanninvzhuang.png",
@@ -170,6 +185,64 @@ export const card = {
             }
         },
     },
+    jueyizhiren: {
+        type: "equip",
+        subtype: "equip1",
+        distance: { attackFrom: -1 },
+        ai: {
+            basic: {
+                equipValue: 8,
+            },
+        },
+        skills: ["jueyizhiren_skill"],
+        fullskin: false,
+        image: "ext:群友杀/image/card/jueyizhiren.png",
+        enable: true,
+        selectTarget: -1,
+        filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+        modTarget: true,
+        allowMultiple: false,
+        content: function () {
+            if (
+                !card?.cards.some(card => {
+                    return get.position(card, true) !== "o";
+                })
+            ) {
+                target.equip(card);
+            }
+            //if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+        },
+        toself: true,
+    },
+    wushenzhiren: {
+        type: "equip",
+        subtype: "equip1",
+        distance: { attackFrom: -1 },
+        ai: {
+            basic: {
+                equipValue: 8,
+            },
+        },
+        skills: ["wushenzhiren_skill"],
+        fullskin: false,
+        image: "ext:群友杀/image/card/wushenzhiren.png",
+        enable: true,
+        selectTarget: -1,
+        filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
+        modTarget: true,
+        allowMultiple: false,
+        content: function () {
+            if (
+                !card?.cards.some(card => {
+                    return get.position(card, true) !== "o";
+                })
+            ) {
+                target.equip(card);
+            }
+            //if (cards.length && get.position(cards[0], true) == "o") target.equip(cards[0]);
+        },
+        toself: true,
+    },
 };
 
 export const skill = {
@@ -207,6 +280,41 @@ export const skill = {
                 content: function () {
                     trigger.num = 2;
                 },
+            },
+        },
+    },
+    jueyizhiren_skill: {
+        equipSkill: true,
+        mod: {
+            selectTarget: function (card, player, range) {
+                if (card.name == "sha") range[1]++;
+            },
+        },
+    },
+    wushenzhiren_skill: {
+        equipSkill: true,
+        trigger: {
+            player: "useCardToPlayered",
+        },
+        forced: true,
+        filter: function (event, player) {
+            return event.card.name == "sha" && !event.getParent().directHit.includes(event.target);
+        },
+        content: function () {
+            const id = trigger.target.playerid;
+            const map = trigger.getParent().customArgs;
+            if (!map[id]) {
+                map[id] = {};
+            }
+            if (typeof map[id].shanRequired == "number") {
+                map[id].shanRequired++;
+            } else {
+                map[id].shanRequired = 2;
+            }
+        },
+        mod: {
+            cardUsable: function (card, player, num) {
+                if (card.name == "sha") return num + 3;
             },
         },
     },

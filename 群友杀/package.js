@@ -1,10 +1,10 @@
 extension["群友杀"] = {
-	date: "2025/09/13",
+	date: "2025/10/14",
 	intro: "灵光一闪和超绝行动力的产物(云师傅工作量好大啊，来个人救救云师傅吧喵)",
 	author: "云笺",
 	netdisk: "https://github.com/884020583/qunyousha/tree/main",
 	forum: "https://qm.qq.com/q/DKBfxgqP4G",
-	version: "1.2.7",
+	version: "1.3.3",
 	files: [
 		"extension.js", "characterData.js", "characterSkill.js", "translation.js", "cards.js", "package.js", "info.json", "README.md", "LICENSE",
 
@@ -12,7 +12,7 @@ extension["群友杀"] = {
 		
 		"image/groups/qunyou.png", "image/groups/zako.png", "image/groups/waijing.png", "image/groups/feisheng.png", "image/groups/shigan.png", "image/groups/aoye.png",
 
-		"image/card/fangbaodun.png", "image/card/woyaokanninvzhuang.png", "image/card/kaikou.png", 
+		"image/card/fangbaodun.png", "image/card/woyaokanninvzhuang.png", "image/card/kaikou.png", "image/card/jueyizhiren.png", "image/card/wushenzhiren.png",
 
 		"image/mark/chongnengqiu_bingshuang.png", "image/mark/chongnengqiu_denglizi.png", "image/mark/chongnengqiu_heian.png", "image/mark/chongnengqiu_shandian.png",
 		"image/mark/chuangzaoxing_AI.png", "image/mark/diandonglixue.png", "image/mark/huixiangxingtai.png", "image/mark/jizhong.png", "image/mark/piancha.png", "image/mark/xunhuan.png",
@@ -24,7 +24,9 @@ extension["群友杀"] = {
 		"image/character/zuolaobai.jpg", "image/character/jinbihai.jpg", "image/character/sb_zuolaobai.jpg", "image/character/yuqiu.jpg", "image/character/sb_yunjian.jpg",
 		"image/character/shen_lvren.jpg", "image/character/re_KK_jiang.jpg", "image/character/lifu_Hina.jpg", "image/character/luoming.jpg", "image/character/shen_mojiexianjun_zuolaobai.jpg",
 		"image/character/shen_mojiexianjun_zuolaobai_shadow.jpg", "image/character/kelvdela.jpg", "image/character/sp_yuchuanluo.jpg", "image/character/sb_kongmeng.jpg", 
-		"image/character/guzhangjiqiren.jpg",
+		"image/character/guzhangjiqiren.jpg", "image/character/haiseyin.jpg", "image/character/old_sp_yuchuanluo.jpg", "image/character/kongbaijun.jpg",
+		"image/character/shen_dajiejie.jpg", "image/character/shen_dajiejie_2.jpg", "image/character/shen_dajiejie_3.jpg", "image/character/sp_dajiejie.jpg", 
+		"image/character/sp_jinbihai.jpg", "image/character/sp_yunjian.jpg", "image/character/yijie_yuqiu.jpg", "image/character/zou.jpg",
 	],
 	size: "<30MB"
 };

@@ -36,4 +36,15 @@ import { lib, game, ui, get, ai, _status } from '../../../noname.js'
 		// 更新storage中的dualside配置
 		this.storage.dualside = cfg;
 	};
+	/**
+	 * 打印当前事件链上的事件对象的名称
+	 * @param {number} deep - 获取的层数
+	 * 使用方法：event.getParent(deep)
+	 */
+	lib.element.event.printEventName = function(deep = 1) {
+		game.log("event.name: " + this.name);
+		for (let i = 1; i <= deep; i++) {
+			game.log("event.getParent(" + i + ").name: " + this.getParent(i).name);
+		}
+	}
 })();
