@@ -71,6 +71,12 @@ export const intro = {
 	sp_jinbihai: "一袋猫粮",
 	sp_yunjian: "“那咋了？就要就要！”",
 	shen_dajiejie: "真正的大师，永远怀着一颗学徒之心",
+	shen_xingnang: "“请输入文本”",
+	shen_lianyu: "自缚の天使",
+	zou: "大好きな人",
+	re_zhizimeng: "牢梦酱油美味鲜",
+	yijie_yuqiu: "假如在另一个世界，我们早已历经截然不同的轨迹……",
+	shen_lvfa_kelvdela: "律法的半神",
 };
 
 export const character = {
@@ -81,7 +87,7 @@ export const character = {
 		maxHp: 10,
 		hujia: 5,
 		isAiForbidden: true,
-		skills: ["test1", "test2"],
+		skills: ["test1", "test2", "test3"],
 	},
 	KK_jiang: {
 		sex: "male",
@@ -242,7 +248,7 @@ export const character = {
 		group: "shigan",
 		hp: 4,
 		isZhugong: true,
-		skills: ["qinxue", "sb_gongmian"],
+		skills: ["qys_qinxue", "sb_gongmian"],
 	},
 	shen_lvren: {
 		sex: "male",
@@ -303,7 +309,7 @@ export const character = {
 		sex: "female",
 		group: "waijing",
 		hp: 4,
-		skills: ["juehaihuitao", "haiyaodeshouwang"],
+		skills: ["juehaihuitao", "haiyaodeshouwang", "huixiangzhisheng"],
 	},
 	sp_dajiejie: {
 		sex: "female",
@@ -331,5 +337,44 @@ export const character = {
 		group: "shen",
 		hp: 4,
 		skills: ["yi_huanqi", "mi_wushen", "tianshengdewuzhe", "qys_qianxun"],
+	},
+	shen_xingnang: {
+		sex: "male",
+		group: "shen",
+		hp: 4,
+		skills: ["xuneng", "shihun", "bumie", "shenmian", "qys_fuhua", "shenkui", "zhiling", "jueduiluoji"],
+	},
+	shen_lianyu: {
+		sex: "male",
+		group: "shen",
+		hp: 6,
+		maxHp: 12,
+		skills: ["zifudetianshi", "shenaizhongsheng", "danzhongshengbubiaishen", "cierdulian", "tianshideyiai"],
+	},
+	zou: {
+		sex: "male",
+		group: "waijing",
+		hp: 4,
+		maxHp: 5,
+		skills: ["yihuo", "zhuanhuo", "qys_renxin", "gudi"],
+	},
+	re_zhizimeng: {
+		sex: "female",
+		group: "feisheng",
+		hp: 6,
+		maxHp: 12,
+		skills: ["re_huigui", "re_huizhang", "re_danchun", "re_huanzhai", "chuancheng"],
+	},
+	yijie_yuqiu: {
+		sex: "female",
+		group: "shigan",
+		hp: 2,
+		skills: ["miliu_huiguangfanzhao", "pianzhizhe", "shiqudedaijia", "duomoenci"],
+	},
+	shen_lvfa_kelvdela: {
+		sex: "female",
+		group: "shen",
+		hp: 3,
+		skills: ["zuizhongxieyi", "shilian", "qikuaiyizhao", "quanxianfengjin"],
 	},
 };

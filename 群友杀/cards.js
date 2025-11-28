@@ -1,6 +1,7 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js'
 export const addList = [
-    ["heart", "13", "fangbaodun"], ["spade", "9", "woyaokanninvzhuang"], ["heart", "6", "kaikou"]
+    ["heart", "13", "fangbaodun"], ["spade", "9", "woyaokanninvzhuang"], ["heart", "6", "kaikou"],
+    ["diamond", "5", "lianlipaoji"]
 ];
 
 export const card = {
@@ -243,6 +244,65 @@ export const card = {
         },
         toself: true,
     },
+    lianlipaoji: {
+        ai: {
+            basic: {
+                useful: 5,
+                value: 1,
+            },
+        },
+        type: "trick",
+        fullskin: false,
+        image: "ext:群友杀/image/card/lianlipaoji.png",
+        enable: true,
+        recastable: true,
+        selectTarget: -1,
+        filterTarget: (card, player, target) => player == target,
+        toself: true,
+        content: async function (event, trigger, player) {
+            const chooseTarget1 = await player.chooseTarget([1, 5], true).forResult();
+            const targets = chooseTarget1.targets;
+            if (chooseTarget1.bool) { 
+                player.line(targets);
+                var total_hp = 0;
+                var total_damagedHp = 0;
+                var total_handCard = 0;
+                for (const target of targets) {
+                    total_hp += target.hp;
+                    total_damagedHp += target.getDamagedHp();
+                    total_handCard += target.countCards("h");
+                }
+                if (total_hp == total_damagedHp + total_handCard || total_handCard == total_damagedHp + total_hp) {
+                    player.draw(targets.length);
+                    const chooseToDiscard = await player.chooseToDiscard([1, Infinity], "he", false).forResult();
+                    if (chooseToDiscard.bool) { 
+                        var num = targets.length * chooseToDiscard.cards.length;
+                        while (num > 0) {
+                            const chooseTarget2 = await player.chooseTarget("你还可以弃置这些角色共计" + num + "张牌", 1, false, (card, player, target) => {
+                                return targets.includes(target) && target.countCards("he") > 0;
+                            }).forResult();
+                            if (chooseTarget2.bool) {
+                                const target = chooseTarget2.targets[0];
+                                const discardPlayerCard = await player.discardPlayerCard(target, "he", [1, num], false).forResult();
+                                if (discardPlayerCard.bool) {
+                                    num -= discardPlayerCard.cards.length;
+                                    if (target.countCards("h") == 0) target.turnOver();
+                                } else {
+                                    break;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    player.discard(player.getCards("h"));
+                    player.loseHp(player.maxHp);
+                    player.loseMaxHp(3);
+                }
+            }
+        },
+    },
 };
 
 export const skill = {
@@ -257,10 +317,13 @@ export const skill = {
                 },
                 lastDo: true,
                 forced: true,
-                locked: false,
                 filter: function (event, player) {
-                    return event.card && ((event.card.name == "sha" && !event.card.nature && event.card.color == "red") 
-                        || (get.type(event.card) == "trick" && get.tag(event.card, "damage" && event.card.color == "black")));
+                    if (player.hasSkillTag("unequip2")) return false;
+                    if (!event.card) return false;
+                    const card = event.card;
+                    if (get.name(card) == "sha" && !get.nature(card) && get.color(card) == "red") return true;
+                    if (get.type(card, "trick") == "trick" && get.tag(card, "damage") && get.color(card) == "black") return true;
+                    return false;
                 },
                 content: function () {
                     trigger.num = 0;
@@ -269,12 +332,12 @@ export const skill = {
             overflow: {
                 equipSkill: true,
                 trigger: {
-                    player: "damageBegin",
+                    player: "damageBegin2",
                 },
                 lastDo: true,
                 forced: true,
-                locked: false,
                 filter: function (event, player) {
+                    if (player.hasSkillTag("unequip2")) return false;
                     return event.num > 2;
                 },
                 content: function () {
